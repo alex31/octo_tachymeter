@@ -153,6 +153,7 @@ CSRC = $(STARTUPSRC) \
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CPPSRC =	led_blink.cpp \
+		periodSense.cpp \
 		main.cpp
 
 # C sources to be compiled in ARM mode regardless of the global setting.

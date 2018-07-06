@@ -4,6 +4,7 @@
 #include "stdutil.h"
 #include "ttyConsole.h"
 #include "led_blink.hpp"
+#include "hardwareConf.hpp"
 
 /*
   Câbler une LED sur la broche C0

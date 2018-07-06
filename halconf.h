@@ -90,8 +90,13 @@
  * @brief   Enables the ICU subsystem.
  */
 #if !defined(HAL_USE_ICU) || defined(__DOXYGEN__)
-#define HAL_USE_ICU                 FALSE
+#define HAL_USE_ICU                 TRUE
 #endif
+
+#define ICU_DRIVER_EXT_FIELDS   \
+  volatile bool hasOverflow;	\
+  void  (*callable) (void *);
+
 
 /**
  * @brief   Enables the MAC subsystem.
