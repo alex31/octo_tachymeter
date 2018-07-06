@@ -20,7 +20,7 @@ endif
 
 
 ifeq ($(USE_OPT),)
-  USE_OPT =  -O0  -ggdb3  -Wall -Wextra \
+  USE_OPT =  -Og  -ggdb3  -Wall -Wextra \
 	    -falign-functions=16 -fomit-frame-pointer \
 	    $(GCC_DIAG)
 endif
@@ -40,7 +40,7 @@ endif
 
 # C++ specific options here (added to USE_OPT).
 ifeq ($(USE_CPPOPT),)
-  USE_CPPOPT = -std=gnu++1y -fno-rtti -fno-exceptions 
+  USE_CPPOPT = -std=gnu++17 -fno-rtti -fno-exceptions 
 endif
 
 # Enable this if you want the linker to remove unused code and data
