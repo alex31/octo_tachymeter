@@ -2,11 +2,10 @@
 #include <ch.h>
 #include <hal.h>
 #include "windowsAverage.hpp"
+#include "hardwareConf.hpp"
 
 
 /*
- * calcul du diviseur
- * abort si clock n'est ni sourceFreq ni 2 * sourceFreq
  * demarrage du timer
  * changement de diviseur dans la foulée
  * sur callback : nouvelle entrée dans windowAverage
@@ -22,14 +21,15 @@ using CountWinAvg = WindowAverage<icucnt_t, 6>;
 
 class PeriodSense {
 public:
-  PeriodSense(ICUDriver * const _icu, const int16_t _divider,
-	      const uint32_t _sourceFreq);
+  PeriodSense(ICUDriver * const _icup, const uint32_t _index);
   uint16_t	getWidthAverage(void);
+  uint32_t	getERPM(void);
   
 private:
-  ICUDriver * const	icu;
+  void setDivider (const uint16_t divider);
+
+
+  ICUDriver * const	icup;
   ICUConfig		config;
-  const uint16_t	divider;
-  const uint32_t	sourceFreq;
-  CountWinAvg		winAvg;
+  static CountWinAvg	winAvg[TIMER_NUM_INPUT];
 };

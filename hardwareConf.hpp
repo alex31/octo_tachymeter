@@ -31,7 +31,7 @@ static constexpr uint32_t MAX_RPM = 30000UL;
 static constexpr uint32_t ERPM_RPM_RATIO     = 6UL;
 static constexpr uint32_t TIMER_WIDTH_BITS   = 16UL;
 static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2;
-
+static constexpr size_t	  TIMER_NUM_INPUT = 1U;
 
 // CALCULATED CONSTANTS
 static constexpr uint32_t FREQ_AT_MAX_RPM = (MAX_RPM * ERPM_RPM_RATIO) / 60UL;

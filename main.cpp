@@ -5,6 +5,7 @@
 #include "ttyConsole.h"
 #include "led_blink.hpp"
 #include "hardwareConf.hpp"
+#include "periodSense.hpp"
 
 /*
   Câbler une LED sur la broche C0
@@ -24,10 +25,11 @@ static THD_WORKING_AREA(waBlinker, 256);
 {
   (void)arg;
   chRegSetThreadName("blinker");
-  
-  while (TRUE) { 
-    palToggleLine (LINE_C00_LED1); 	
+  PeriodSense ps0(&ICUD8, 0) ;
+ 
+  while (true) { 
     chThdSleepMilliseconds (500);
+    DebugTrace ("rpm = %lu", ps0.getERPM());
   }
 }
 
@@ -37,6 +39,8 @@ void _init_chibios() {
   chSysInit();
   initHeap();
 }
+
+
 
 
 int main(void) {
@@ -53,19 +57,10 @@ int main(void) {
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);
 
   consoleLaunch();
-  chThdSleepSeconds(3);
+  chThdSleepSeconds(1);
   ledBlink.setFlashes(2, 4);
 
   // main thread does nothing
   chThdSleep (TIME_INFINITE);
 }
 
-void  port_halt (void)
-{
-  while (1) ;
-}
-
-void generalKernelErrorCB (void)
-{
-  port_halt ();
-}
