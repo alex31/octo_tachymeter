@@ -6,7 +6,7 @@
 #include "led_blink.hpp"
 #include "hardwareConf.hpp"
 #include "periodSense.hpp"
-
+#include "pwm.h"
 /*
   Câbler une LED sur la broche C0
 
@@ -14,6 +14,8 @@ Câbler sur la carte de dev le chip convertisseur USB série :
 
 ftdi RX sur B6 (utiliser un jumper)
 ftdi TX sur B7 (utiliser un jumper)
+
+connecter PA5 sur PA2 et PC6
 
 */
 
@@ -25,11 +27,12 @@ static THD_WORKING_AREA(waBlinker, 256);
 {
   (void)arg;
   chRegSetThreadName("blinker");
-  PeriodSense ps0(&ICUD8, 0) ;
+  PeriodSense ps[]{&ICUD8} ;
  
   while (true) { 
     chThdSleepMilliseconds (500);
-    DebugTrace ("rpm = %lu", ps0.getERPM());
+    //DebugTrace ("rpm = %lu w=%lu", ps[0].getERPM(), icuGetPeriodX(&ICUD8));
+    DebugTrace ("rpm = %lu w=%lu", ps[0].getERPM(), ps[0].getMperiod(0));
   }
 }
 
@@ -59,7 +62,8 @@ int main(void) {
   consoleLaunch();
   chThdSleepSeconds(1);
   ledBlink.setFlashes(2, 4);
-
+  launchPwm();
+  
   // main thread does nothing
   chThdSleep (TIME_INFINITE);
 }
