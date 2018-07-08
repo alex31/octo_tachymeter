@@ -95,7 +95,8 @@
 
 #define ICU_DRIVER_EXT_FIELDS   \
   volatile bool hasOverflow;	\
-  uint32_t	index;
+  uint32_t	index;		\
+  uint32_t	widthOneRpm;
 
 
 /**

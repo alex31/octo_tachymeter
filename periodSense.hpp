@@ -23,7 +23,7 @@ class PeriodSense {
 public:
   PeriodSense(ICUDriver * const _icup);
   uint16_t	getPeriodAverage(void);
-  uint32_t	getERPM(void);
+  uint32_t	getRPM(void);
   uint32_t	getMperiod(const size_t idx){return winAvg[idx].getMean();};
   
 private:

@@ -45,7 +45,12 @@ uint16_t	PeriodSense::getPeriodAverage(void)
   }
 };
 
-#warning "optimise calculation, calculate invariant once"
+
+// constexpr PeriodSense::calculateWidthOneRpm(void)
+// {
+//   uint64_t num = static_cast<uint64_t> (TIMER_FREQ_IN) / icup->tim->PSC)) * 60UL
+// }
+
 void	PeriodSense::setDivider(const uint16_t divider)
 {
   auto cr1 = icup->tim->CR1;
@@ -53,18 +58,12 @@ void	PeriodSense::setDivider(const uint16_t divider)
   icup->tim->CNT    = 0;
   icup->tim->PSC    = divider * (icup->clock / TIMER_FREQ_IN);
   icup->tim->CR1    = cr1;
+  icup->widthOneRpm = TIMER_FREQ_IN  * 60ULL / icup->tim->PSC / ERPM_RPM_RATIO;
 };
 
-uint32_t	PeriodSense::getERPM(void)
+uint32_t	PeriodSense::getRPM(void)
 {
-  const auto timFreqHz = TIMER_FREQ_IN / icup->tim->PSC;
-  
-  const auto period = getPeriodAverage();
-  const auto erps = timFreqHz / period;
-  const auto erpm = erps * 60UL;
-  const auto rpm = erpm / ERPM_RPM_RATIO;
-
-  return rpm;
+  return  icup->widthOneRpm / getPeriodAverage();
 }
 
 
