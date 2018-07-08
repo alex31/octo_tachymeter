@@ -45,7 +45,7 @@ uint16_t	PeriodSense::getPeriodAverage(void)
   }
 };
 
-
+#warning "optimise calculation, calculate invariant once"
 void	PeriodSense::setDivider(const uint16_t divider)
 {
   auto cr1 = icup->tim->CR1;
@@ -57,7 +57,7 @@ void	PeriodSense::setDivider(const uint16_t divider)
 
 uint32_t	PeriodSense::getERPM(void)
 {
-  constexpr auto timFreqHz = TIMER_FREQ_IN / TIM_DIVIDER;
+  const auto timFreqHz = TIMER_FREQ_IN / icup->tim->PSC;
   
   const auto period = getPeriodAverage();
   const auto erps = timFreqHz / period;

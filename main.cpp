@@ -27,7 +27,7 @@ static THD_WORKING_AREA(waBlinker, 256);
 {
   (void)arg;
   chRegSetThreadName("blinker");
-  PeriodSense ps[]{&ICUD8} ;
+  PeriodSense ps[]{&ICUD12} ;
  
   while (true) { 
     chThdSleepMilliseconds (500);

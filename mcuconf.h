@@ -188,21 +188,22 @@
 /*
  * ICU driver system settings.
  */
-#define STM32_ICU_USE_TIM1                  FALSE
-#define STM32_ICU_USE_TIM2                  FALSE
-#define STM32_ICU_USE_TIM3                  FALSE
-#define STM32_ICU_USE_TIM4                  FALSE
-#define STM32_ICU_USE_TIM5                  FALSE
-#define STM32_ICU_USE_TIM8                  TRUE
-#define STM32_ICU_USE_TIM9                  TRUE
-#define STM32_ICU_USE_TIM12                 FALSE
-#define STM32_ICU_TIM1_IRQ_PRIORITY         7
-#define STM32_ICU_TIM2_IRQ_PRIORITY         7
-#define STM32_ICU_TIM3_IRQ_PRIORITY         7
-#define STM32_ICU_TIM4_IRQ_PRIORITY         7
-#define STM32_ICU_TIM5_IRQ_PRIORITY         7
-#define STM32_ICU_TIM8_IRQ_PRIORITY         7
-#define STM32_ICU_TIM9_IRQ_PRIORITY         7
+#define STM32_ICU_USE_TIM1                   FALSE
+#define STM32_ICU_USE_TIM2                   FALSE
+#define STM32_ICU_USE_TIM3                   FALSE
+#define STM32_ICU_USE_TIM4                   FALSE
+#define STM32_ICU_USE_TIM5                   FALSE
+#define STM32_ICU_USE_TIM8                   TRUE
+#define STM32_ICU_USE_TIM9                   FALSE
+#define STM32_ICU_USE_TIM12                  TRUE
+#define STM32_ICU_TIM1_IRQ_PRIORITY          7
+#define STM32_ICU_TIM2_IRQ_PRIORITY          7
+#define STM32_ICU_TIM3_IRQ_PRIORITY          7
+#define STM32_ICU_TIM4_IRQ_PRIORITY          7
+#define STM32_ICU_TIM5_IRQ_PRIORITY          7
+#define STM32_ICU_TIM8_IRQ_PRIORITY          7
+#define STM32_ICU_TIM9_IRQ_PRIORITY          7
+#define STM32_ICU_TIM12_IRQ_PRIORITY         7
 
 /*
  * MAC driver system settings.
