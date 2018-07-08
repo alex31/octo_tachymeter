@@ -60,8 +60,9 @@ uint32_t	PeriodSense::getERPM(void)
   constexpr auto timFreqHz = TIMER_FREQ_IN / TIM_DIVIDER;
   
   const auto period = getPeriodAverage();
-  const auto rps = timFreqHz / period;
-  const auto rpm = rps / 60UL;
+  const auto erps = timFreqHz / period;
+  const auto erpm = erps * 60UL;
+  const auto rpm = erpm / ERPM_RPM_RATIO;
 
   return rpm;
 }
