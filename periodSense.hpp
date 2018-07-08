@@ -5,17 +5,8 @@
 #include "hardwareConf.hpp"
 
 
-/*
- * demarrage du timer
- * changement de diviseur dans la foulée
- * sur callback : nouvelle entrée dans windowAverage
- * methode : getPeriodAverage
-
-
- */
-
-
-using CountWinAvg = WindowAverage<icucnt_t, 6>;
+// window average of 6 values with higher and lower values discarded by median filter
+using CountWinAvg = WindowMedianAverage<icucnt_t, 8, 1>;
 
 
 
