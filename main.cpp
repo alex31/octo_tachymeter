@@ -19,7 +19,17 @@ connecter PA5 sur PA2 et PC6
 
 */
 
+/*
 
+  TODO : 
+  * tester avec un capteur à effet hall
+  * tester avec plusieurs entrées
+  * ajouter un filtre median
+  * tester la validité de la mesure en utilisant width car normalement (tester avant)
+    width doit être approximativement égal à period / 2
+  * deux types de messages : rpm et qualité
+  * tester envoi sur UART par DMA
+ */
 
 
 static THD_WORKING_AREA(waBlinker, 256);
