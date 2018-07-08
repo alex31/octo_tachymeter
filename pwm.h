@@ -7,8 +7,9 @@
 extern "C" {
 #endif
 
-void launchPwm (void);
-
+  void launchPwm (void);
+  uint32_t pwmGetFreq(void);
+  
 #ifdef __cplusplus
 }
 #endif

@@ -8,7 +8,7 @@
 #include "pwm.h"
 
 
-
+static uint32_t newFreq=0;
 
 
 // pour les parties 1 (persistance) et 2 (servo) et 3 (il variation continue du pwm)
@@ -45,6 +45,10 @@ void launchPwm ()
 
 
 
+uint32_t pwmGetFreq(void)
+{
+  return newFreq;
+}
 
 
 static noreturn void pwmCommand(void *arg) 
@@ -58,7 +62,7 @@ static noreturn void pwmCommand(void *arg)
     //                     et 1.0f quand il est tourné à droite
     const float potPitch =  getPotValue(); 
 
-    const uint32_t newFreq = (potPitch * 40000) + 30; // entre 30hz et 3030hz
+    newFreq = (potPitch * 40000) + 30; // entre 30hz et 3030hz
     pwmChangeFrequency(&PWMD2, newFreq);
     pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD2, 5000));
  

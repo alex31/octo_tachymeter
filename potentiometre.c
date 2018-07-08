@@ -5,7 +5,7 @@
 #include "stdutil.h"
 
 #define ADC_GRP1_NUM_CHANNELS   1
-#define ADC_GRP1_BUF_DEPTH      1
+#define ADC_GRP1_BUF_DEPTH      1024
 static adcsample_t samples1[ADC_GRP1_NUM_CHANNELS * ADC_GRP1_BUF_DEPTH];
 
 /*
@@ -39,5 +39,10 @@ void initPotentiometre(void)
 
 float getPotValue (void)
 {
-  return (samples1[0] / 4095.0f);
+  uint32_t mean=0;
+  for (size_t i=0; i< ADC_GRP1_BUF_DEPTH; i++) {
+    mean += samples1[i];
+  }
+  mean /= ADC_GRP1_BUF_DEPTH;
+  return mean/4095.0f;
 }

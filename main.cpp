@@ -32,7 +32,12 @@ static THD_WORKING_AREA(waBlinker, 256);
   while (true) { 
     chThdSleepMilliseconds (500);
     //DebugTrace ("rpm = %lu w=%lu", ps[0].getERPM(), icuGetPeriodX(&ICUD8));
-    DebugTrace ("rpm = %lu w=%lu", ps[0].getERPM(), ps[0].getMperiod(0));
+    DebugTrace ("rpm = %lu w=%lu f=%lu", ps[0].getERPM(), ps[0].getMperiod(0), pwmGetFreq());
+    DebugTrace ("FREQ_AT_MAX_RPM=%lu  FREQ_AT_MIN_RPM=%lu "
+		"TICK_AT_MIN_RPM=%lu TIM_DIVIDER=%lu "
+		"NB_TICKS_AT_MAX_RPM=%lu",
+		FREQ_AT_MAX_RPM, FREQ_AT_MIN_RPM, TICK_AT_MIN_RPM,
+		TIM_DIVIDER, NB_TICKS_AT_MAX_RPM);
   }
 }
 
