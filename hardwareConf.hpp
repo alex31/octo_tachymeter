@@ -39,3 +39,4 @@ static constexpr uint32_t FREQ_AT_MIN_RPM = (MIN_RPM * ERPM_RPM_RATIO) / 60UL;
 static constexpr uint32_t TICK_AT_MIN_RPM = TIMER_FREQ_IN / FREQ_AT_MIN_RPM;
 static constexpr uint32_t TIM_DIVIDER = ceilf (TICK_AT_MIN_RPM / powf(2, TIMER_WIDTH_BITS));
 static constexpr uint32_t NB_TICKS_AT_MAX_RPM =  powf(2.0f, TIMER_WIDTH_BITS) * MIN_RPM / MAX_RPM;
+static constexpr uint32_t WIDTH_ONE_RPM = TIMER_FREQ_IN  * 60ULL / TIM_DIVIDER / ERPM_RPM_RATIO;

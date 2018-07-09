@@ -23,15 +23,14 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
 /*
 
   TODO : 
-  * mutex entre getRpm et ISR ?
   * tester avec un capteur à effet hall
-  * tester avec plusieurs entrées
   * tester la validité de la mesure en utilisant width car normalement (tester avant)
     width doit être approximativement égal à period / 2
   * deux types de messages : rpm et qualité
   * tester envoi sur UART par DMA
  */
 
+volatile uint32_t dbgRes;
 
 static THD_WORKING_AREA(waBlinker, 1024);
 [[noreturn]] static void blinker (void *arg)
@@ -52,7 +51,13 @@ static THD_WORKING_AREA(waBlinker, 1024);
     }} ;
  
   while (true) { 
-    chThdSleepMilliseconds (2000);
+    chThdSleepMilliseconds (1000);
+    for (int i=0; i<1000; i++) {
+      for (const PeriodSense &ps : psa) {
+	dbgRes = ps.getRPM();
+      }
+    }
+
     //DebugTrace ("rpm = %lu w=%lu", ps[0].getRPM(), icuGetPeriodX(&ICUD8));
     for (const PeriodSense &ps : psa) {
       DebugTrace ("rpm[%u] = %lu w=%lu psc=%lu f=%lu", ps.getIndex(),

@@ -41,7 +41,7 @@ uint16_t	PeriodSense::getPeriodAverage(void) const
     palClearLine(LINE_C00_LED1); 
     return USHRT_MAX;
   } else {
-    return winAvg[icup->index].getMean();
+    return winAvg[icup->index].getMean(true);
   }
 };
 
@@ -58,12 +58,11 @@ void	PeriodSense::setDivider(const uint16_t divider)
   icup->tim->CNT    = 0;
   icup->tim->PSC    = divider * (icup->clock / TIMER_FREQ_IN);
   icup->tim->CR1    = cr1;
-  icup->widthOneRpm = TIMER_FREQ_IN  * 60ULL / TIM_DIVIDER / ERPM_RPM_RATIO;
 };
 
 uint32_t	PeriodSense::getRPM(void) const
 {
-  return  icup->widthOneRpm / getPeriodAverage();
+  return  WIDTH_ONE_RPM / getPeriodAverage();
 }
 
 
