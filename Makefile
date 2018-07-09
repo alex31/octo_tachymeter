@@ -147,7 +147,6 @@ CSRC = $(STARTUPSRC) \
        $(VARIOUS)/printf.c \
        $(VARIOUS)/microrl/microrlShell.c \
        $(VARIOUS)/microrl/microrl.c \
-       $(VARIOUS)/rtcAccess.c \
        ttyConsole.c \
        globalVar.c \
        potentiometre.c \
