@@ -1,5 +1,6 @@
 #include <ch.h>
 #include <hal.h>
+#include "array"
 #include "globalVar.h"
 #include "stdutil.h"
 #include "ttyConsole.h"
@@ -8,20 +9,21 @@
 #include "periodSense.hpp"
 #include "pwm.h"
 /*
-  Câbler une LED sur la broche C0
+Connecter sur la carte de dev le chip convertisseur USB série  :
+  ftdi RX sur B10 (enlever le jumper)
+  ftdi TX sur B11 (enlever le jumper)
 
-Câbler sur la carte de dev le chip convertisseur USB série :
-
-ftdi RX sur B6 (utiliser un jumper)
-ftdi TX sur B7 (utiliser un jumper)
-
-connecter PA5 sur PA2 et PC6
+  Connecter une LED sur la broche C0 (overflow)
+  Connecter le potar à bouton sur la broche  C1 (overflow)
+  Connecter une LED sur la broche C2 (flash led)
+  Connecter PA5 sur PA2, PB14, PC6
 
 */
 
 /*
 
   TODO : 
+  * mutex entre getRpm et ISR ?
   * tester avec un capteur à effet hall
   * tester avec plusieurs entrées
   * tester la validité de la mesure en utilisant width car normalement (tester avant)
@@ -31,17 +33,32 @@ connecter PA5 sur PA2 et PC6
  */
 
 
-static THD_WORKING_AREA(waBlinker, 256);
+static THD_WORKING_AREA(waBlinker, 1024);
 [[noreturn]] static void blinker (void *arg)
 {
   (void)arg;
   chRegSetThreadName("blinker");
-  PeriodSense ps[]{&ICUD12} ;
+  std::array<PeriodSense, 7> psa = {{
+      {&ICUD1, ICU_CHANNEL_1},  // 168
+#ifndef USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+      {&ICUD2, ICU_CHANNEL_1},  // 84
+#endif
+      {&ICUD3, ICU_CHANNEL_1},  // 84
+      {&ICUD4, ICU_CHANNEL_1},  // 84
+      {&ICUD5, ICU_CHANNEL_1},  // 84
+      {&ICUD8, ICU_CHANNEL_1},  // 168
+      {&ICUD9, ICU_CHANNEL_1},  // 168
+      {&ICUD12, ICU_CHANNEL_1}, // 168
+    }} ;
  
   while (true) { 
-    chThdSleepMilliseconds (500);
+    chThdSleepMilliseconds (2000);
     //DebugTrace ("rpm = %lu w=%lu", ps[0].getRPM(), icuGetPeriodX(&ICUD8));
-    DebugTrace ("rpm = %lu w=%lu f=%lu", ps[0].getRPM(), ps[0].getMperiod(0), pwmGetFreq());
+    for (const PeriodSense &ps : psa) {
+      DebugTrace ("rpm[%u] = %lu w=%lu psc=%lu f=%lu", ps.getIndex(),
+		  ps.getRPM(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
+    }
+    DebugTrace("-----------------------");
     // DebugTrace ("FREQ_AT_MAX_RPM=%lu  FREQ_AT_MIN_RPM=%lu "
     // 		"TICK_AT_MIN_RPM=%lu TIM_DIVIDER=%lu "
     // 		"NB_TICKS_AT_MAX_RPM=%lu",

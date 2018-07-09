@@ -12,7 +12,7 @@
 SerialUSBDriver SDU1;
 BaseSequentialStream *chp = (BaseSequentialStream *) &SDU1;
 #else
-BaseSequentialStream *chp = (BaseSequentialStream *) &SD1;
+BaseSequentialStream *chp = (BaseSequentialStream *) &CONSOLE_DEV_SD;
 #endif // HAL_USE_SERIAL_USB
 
 

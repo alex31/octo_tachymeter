@@ -3,7 +3,7 @@
 #include "periodSense.hpp"
 #include <climits>
 
-PeriodSense::PeriodSense(ICUDriver * const _icup):
+PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
   icup(_icup)
 {
   osalDbgAssert((indexer < TIMER_NUM_INPUT),
@@ -17,7 +17,7 @@ PeriodSense::PeriodSense(ICUDriver * const _icup):
     .overflow_cb =  [] (ICUDriver *licup) {licup->hasOverflow = true;
 					   palSetLine(LINE_C00_LED1); 	
 		    },
-    .channel = ICU_CHANNEL_1,
+    .channel = channel,
     .dier = 0
   };
 
@@ -34,7 +34,7 @@ PeriodSense::PeriodSense(ICUDriver * const _icup):
   icuEnableNotifications(icup);
 }
 
-uint16_t	PeriodSense::getPeriodAverage(void)
+uint16_t	PeriodSense::getPeriodAverage(void) const
 {
   if (icup->hasOverflow) {
     icup->hasOverflow = false;
@@ -58,10 +58,10 @@ void	PeriodSense::setDivider(const uint16_t divider)
   icup->tim->CNT    = 0;
   icup->tim->PSC    = divider * (icup->clock / TIMER_FREQ_IN);
   icup->tim->CR1    = cr1;
-  icup->widthOneRpm = TIMER_FREQ_IN  * 60ULL / icup->tim->PSC / ERPM_RPM_RATIO;
+  icup->widthOneRpm = TIMER_FREQ_IN  * 60ULL / TIM_DIVIDER / ERPM_RPM_RATIO;
 };
 
-uint32_t	PeriodSense::getRPM(void)
+uint32_t	PeriodSense::getRPM(void) const
 {
   return  icup->widthOneRpm / getPeriodAverage();
 }

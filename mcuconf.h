@@ -34,6 +34,12 @@
 #define STM32F4xx_MCUCONF
 
 /*
+ * LOCAL define
+ */
+#define	USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS TRUE
+
+
+/*
  * HAL driver system settings.
  */
 #define STM32_NO_INIT                       FALSE
@@ -189,7 +195,7 @@
  * ICU driver system settings.
  */
 #define STM32_ICU_USE_TIM1                   TRUE
-#define STM32_ICU_USE_TIM2                   FALSE
+#define STM32_ICU_USE_TIM2                   (!USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS)
 #define STM32_ICU_USE_TIM3                   TRUE
 #define STM32_ICU_USE_TIM4                   TRUE
 #define STM32_ICU_USE_TIM5                   TRUE
@@ -221,7 +227,7 @@
  */
 #define STM32_PWM_USE_ADVANCED              FALSE
 #define STM32_PWM_USE_TIM1                  FALSE
-#define STM32_PWM_USE_TIM2                  TRUE
+#define STM32_PWM_USE_TIM2                  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
 #define STM32_PWM_USE_TIM3                  FALSE
 #define STM32_PWM_USE_TIM4                  FALSE
 #define STM32_PWM_USE_TIM5                  FALSE
@@ -249,9 +255,9 @@
 /*
  * SERIAL driver system settings.
  */
-#define STM32_SERIAL_USE_USART1             TRUE
+#define STM32_SERIAL_USE_USART1             FALSE
 #define STM32_SERIAL_USE_USART2             FALSE
-#define STM32_SERIAL_USE_USART3             FALSE
+#define STM32_SERIAL_USE_USART3             TRUE
 #define STM32_SERIAL_USE_UART4              FALSE
 #define STM32_SERIAL_USE_UART5              FALSE
 #define STM32_SERIAL_USE_USART6             FALSE
@@ -344,7 +350,7 @@
 
 #define CH_HEAP_USE_TLSF 0 // if 0 or undef, chAlloc will be used
 #define CH_HEAP_SIZE (32*1024)
-#define CONSOLE_DEV_SD SD1
+#define CONSOLE_DEV_SD SD3
 
 
 #endif /* _MCUCONF_H_ */
