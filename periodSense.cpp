@@ -41,7 +41,7 @@ uint16_t	PeriodSense::getPeriodAverage(void) const
     palClearLine(LINE_C00_LED1); 
     return USHRT_MAX;
   } else {
-    return winAvg[icup->index].getMean(true);
+    return winAvg[icup->index].getMean();
   }
 };
 

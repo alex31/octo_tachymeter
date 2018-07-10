@@ -4,9 +4,17 @@
 #include "windowsAverage.hpp"
 #include "hardwareConf.hpp"
 
+namespace Lock {
+  class DiscardIsr {
+    public:
+    static void lock(void) {chSysSuspend();};
+    static void unlock(void) {chSysEnable();};
+  };
+};
+
 
 // window average of 6 values with higher and lower values discarded by median filter
-using CountWinAvg = WindowMedianAverage<icucnt_t, 8, 1>;
+using CountWinAvg = WindowMedianAverage<icucnt_t, 8, 1, Lock::DiscardIsr>;
 
 
 
@@ -15,7 +23,7 @@ public:
   PeriodSense(ICUDriver * const _icup, const icuchannel_t channel);
   uint16_t	getPeriodAverage(void) const;
   uint32_t	getRPM(void) const ;
-  uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean(true);};
+  uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean();};
   uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
   size_t	getIndex(void) const {return icup->index;}
   
