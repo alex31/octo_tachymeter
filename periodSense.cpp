@@ -13,10 +13,15 @@ PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
     .mode = ICU_INPUT_ACTIVE_HIGH,
     .frequency = 560_khz,              /* real divider will be calculated dynamically  */
     .width_cb = nullptr,
-    .period_cb = [] (ICUDriver *licup) {winAvg[licup->index].push(icuGetPeriodX(licup));} ,
-    .overflow_cb =  [] (ICUDriver *licup) {licup->hasOverflow = true;
-					   palSetLine(LINE_C00_LED1); 	
-		    },
+    .period_cb = [] (ICUDriver *licup) {
+      winAvg[licup->index].push(icuGetPeriodX(licup));
+      licup->hasOverflow = false;
+      palClearLine(LINE_C00_LED1); 
+    } ,
+    .overflow_cb =  [] (ICUDriver *licup) {
+      licup->hasOverflow = true;
+      palSetLine(LINE_C00_LED1); 	
+    },
     .channel = channel,
     .dier = 0
   };
@@ -36,13 +41,7 @@ PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
 
 icucnt_t	PeriodSense::getPeriodAverage(void) const
 {
-  if (icup->hasOverflow) {
-    icup->hasOverflow = false;
-    palClearLine(LINE_C00_LED1); 
-    return UINT_MAX;
-  } else {
-    return winAvg[icup->index].getMean();
-  }
+  return (icup->hasOverflow) ? UINT_MAX : winAvg[icup->index].getMean();
 };
 
 
