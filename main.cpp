@@ -28,6 +28,8 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
     width doit être approximativement égal à period / 2
   * deux types de messages : rpm et qualité
   * tester envoi sur UART par DMA
+  * coder la version qui scanne 8 entrées sur un port par DMA pour une interface
+    directe avec une sortie controleur moteur
  */
 
 volatile uint32_t dbgRes;
