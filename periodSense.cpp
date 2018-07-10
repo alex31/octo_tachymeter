@@ -41,7 +41,7 @@ uint16_t	PeriodSense::getPeriodAverage(void) const
     palClearLine(LINE_C00_LED1); 
     return USHRT_MAX;
   } else {
-    return winAvg[icup->index].getMean(true);
+    return winAvg[icup->index].getMean();
   }
 };
 
@@ -66,6 +66,7 @@ uint32_t	PeriodSense::getRPM(void) const
 }
 
 
-
-CountWinAvg	PeriodSense::winAvg[TIMER_NUM_INPUT];
 size_t		PeriodSense::indexer = 0;
+CountWinAvg	PeriodSense::winAvg[TIMER_NUM_INPUT]{{ { []{chSysLock();} },
+						 { []{chSysUnlock();} }
+    }};

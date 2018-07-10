@@ -15,7 +15,7 @@ public:
   PeriodSense(ICUDriver * const _icup, const icuchannel_t channel);
   uint16_t	getPeriodAverage(void) const;
   uint32_t	getRPM(void) const ;
-  uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean(true);};
+  uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean();};
   uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
   size_t	getIndex(void) const {return icup->index;}
   
