@@ -156,6 +156,7 @@ CSRC = $(STARTUPSRC) \
 # setting.
 CPPSRC =	led_blink.cpp \
 		periodSense.cpp \
+		rpmMsg.cpp \
 		main.cpp
 
 # C sources to be compiled in ARM mode regardless of the global setting.
