@@ -62,7 +62,7 @@ static noreturn void pwmCommand(void *arg)
     //                     et 1.0f quand il est tourné à droite
     const float potPitch =  getPotValue(); 
 
-    newFreq = (potPitch * 2000) + 30; // entre 30hz et 3030hz
+    newFreq = (potPitch * 2000) + 5; // entre 30hz et 3030hz
     pwmChangeFrequency(&PWMD2, newFreq);
     pwmEnableChannel(&PWMD2, 0, PWM_PERCENTAGE_TO_WIDTH(&PWMD2, 5000));
  
