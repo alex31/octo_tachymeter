@@ -62,8 +62,8 @@ static THD_WORKING_AREA(waBlinker, 1024);
 
     //DebugTrace ("rpm = %lu w=%lu", ps[0].getRPM(), icuGetPeriodX(&ICUD8));
     for (const PeriodSense &ps : psa) {
-      DebugTrace ("rpm[%u] = %lu w=%lu psc=%lu f=%lu", ps.getIndex(),
-		  ps.getRPM(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
+      DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu f=%lu", ps.getIndex(),
+		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
     }
     DebugTrace("-----------------------");
     // DebugTrace ("FREQ_AT_MAX_RPM=%lu  FREQ_AT_MIN_RPM=%lu "

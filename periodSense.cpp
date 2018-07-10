@@ -11,7 +11,7 @@ PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
 
   config = ICUConfig {
     .mode = ICU_INPUT_ACTIVE_HIGH,
-    .frequency = 1_mhz,              /* real divider will be calculated dynamically  */
+    .frequency = 560_khz,              /* real divider will be calculated dynamically  */
     .width_cb = nullptr,
     .period_cb = [] (ICUDriver *licup) {winAvg[licup->index].push(icuGetPeriodX(licup));} ,
     .overflow_cb =  [] (ICUDriver *licup) {licup->hasOverflow = true;
@@ -34,12 +34,12 @@ PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
   icuEnableNotifications(icup);
 }
 
-uint16_t	PeriodSense::getPeriodAverage(void) const
+icucnt_t	PeriodSense::getPeriodAverage(void) const
 {
   if (icup->hasOverflow) {
     icup->hasOverflow = false;
     palClearLine(LINE_C00_LED1); 
-    return USHRT_MAX;
+    return UINT_MAX;
   } else {
     return winAvg[icup->index].getMean();
   }
@@ -53,10 +53,11 @@ uint16_t	PeriodSense::getPeriodAverage(void) const
 
 void	PeriodSense::setDivider(const uint16_t divider)
 {
-  auto cr1 = icup->tim->CR1;
+  const auto cr1 = icup->tim->CR1;
   icup->tim->CR1    = 0;
   icup->tim->CNT    = 0;
   icup->tim->PSC    = divider * (icup->clock / TIMER_FREQ_IN);
+  icup->tim->ARR  = 0xFFFF;
   icup->tim->CR1    = cr1;
 };
 
