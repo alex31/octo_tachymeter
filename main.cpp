@@ -49,7 +49,7 @@ static THD_WORKING_AREA(waBlinker, 1024);
 {
   (void)arg;
   chRegSetThreadName("blinker");
-  std::array<PeriodSense, 7> psa = {{
+  std::array<PeriodSense, 8> psa = {{
       {&ICUD1, ICU_CHANNEL_1},  // 168
 #ifndef USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
       {&ICUD2, ICU_CHANNEL_1},  // 84
