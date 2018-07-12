@@ -351,6 +351,6 @@
 #define CH_HEAP_USE_TLSF 0 // if 0 or undef, chAlloc will be used
 #define CH_HEAP_SIZE (32*1024)
 #define CONSOLE_DEV_SD SD3
-
+#define SIMPLE_MESSAGE_API_UART 1
 
 #endif /* _MCUCONF_H_ */

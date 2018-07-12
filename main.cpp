@@ -8,6 +8,7 @@
 #include "hardwareConf.hpp"
 #include "periodSense.hpp"
 #include "pwm.h"
+#include "rpmMsg.hpp"
 /*
 Connecter sur la carte de dev le chip convertisseur USB série  :
   ftdi RX sur B10 (enlever le jumper)
@@ -23,13 +24,22 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
 /*
 
   TODO : 
+  * coder envoi sur UART par DMA
+  * tester envoi sur UART par DMA
+
   * tester avec un capteur à effet hall
+
   * tester la validité de la mesure en utilisant width car normalement (tester avant)
     width doit être approximativement égal à period / 2
+
   * deux types de messages : rpm et qualité
-  * tester envoi sur UART par DMA
-  * coder la version qui scanne 8 entrées sur un port par DMA pour une interface
-    directe avec une sortie controleur moteur
+
+  * alternative au capteur effet hall : interface via isolation galvanique 
+    sur une sortie controleur moteur : scanner un port en DMA (cadencé par timer)
+
+  * utiliser 4 broches (resistance zero ohm ou pont de soudure) pour coder :
+    + le type d'entrée (HALL ou ESC) : 1 bit
+    + le nombre de moteurs :  3 bits
  */
 
 volatile uint32_t dbgRes;
@@ -102,7 +112,8 @@ int main(void) {
   ledBlink.setFlashes(2, 4);
   launchPwm();
   
+  startRpmStreaming();
   // main thread does nothing
-  chThdSleep (TIME_INFINITE);
+  chThdSleep(TIME_INFINITE);
 }
 
