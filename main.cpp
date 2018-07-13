@@ -105,12 +105,17 @@ int main(void) {
    *   RTOS is active.
    */
 
-  const std::array<GpioMask, 2> mar = {{
-      {GPIOB, (1<<BUS_NBM0) | (1<<BUS_NBM1) | (1<<BUS_NBM2)},
-      {GPIOB, (1<<BUS_HALL_OR_ESC)}
+  constexpr std::array<GpioMask, 2> mar = {{
+      {GPIOB_BASE, (1<<BUS_NBM0) | (1<<BUS_NBM1) | (1<<BUS_NBM2)},
+      {GPIOB_BASE, (1<<BUS_HALL_OR_ESC)}
     }};
 
-  JumperConf<mar.size()> jpc(mar);
+  constexpr JumperConf<mar.size()> jpc(mar);
+  static_assert(jpc.areMasksValid() == true, "one or more mask are invalid, "
+		                             "all zeroes or one not contiguous");
+  
+  
+  
   consoleInit();
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);
 
