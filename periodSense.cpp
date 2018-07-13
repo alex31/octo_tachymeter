@@ -3,15 +3,13 @@
 #include "periodSense.hpp"
 #include <climits>
 
-PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
-  icup(_icup)
+void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
 {
   osalDbgAssert((indexer < TIMER_NUM_INPUT),
 		"not enough index in array, modify NUM_INPUT in hardwareConf.hpp");
 
+  icup = _icup;
   icup->index = indexer++;
-  if (icup->index > dynSize)
-    return;
   
   config = ICUConfig {
     .mode = ICU_INPUT_ACTIVE_HIGH,
@@ -72,4 +70,3 @@ uint32_t	PeriodSense::getRPM(void) const
 
 CountWinAvg	PeriodSense::winAvg[TIMER_NUM_INPUT];
 size_t		PeriodSense::indexer = 0UL;
-size_t		PeriodSense::dynSize = 1UL;

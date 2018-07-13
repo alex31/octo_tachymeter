@@ -50,30 +50,25 @@ static THD_WORKING_AREA(waBlinker, 1024);
 {
   (void)arg;
   chRegSetThreadName("blinker");
+  const size_t numTrackedMotor = JUMPERS.readConf(0);
+
+  PeriodSense psa[numTrackedMotor];
+  for (size_t i=0; i<numTrackedMotor; i++) {
+    psa[i].setIcu(ICU_TIMER[i].first, ICU_TIMER[i].second);
+  }
   
-  std::array<PeriodSense, 7> psa = {{
-      {&ICUD1, ICU_CHANNEL_1},  // 168
-#ifndef USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
-      {&ICUD2, ICU_CHANNEL_1},  // 84
-#endif
-      {&ICUD3, ICU_CHANNEL_1},  // 84
-      {&ICUD4, ICU_CHANNEL_1},  // 84
-      {&ICUD5, ICU_CHANNEL_1},  // 84
-      {&ICUD8, ICU_CHANNEL_1},  // 168
-      {&ICUD9, ICU_CHANNEL_1},  // 168
-      {&ICUD12, ICU_CHANNEL_1}, // 168
-    }} ;
  
   while (true) { 
     chThdSleepMilliseconds (1000);
     for (int i=0; i<1000; i++) {
-      for (const PeriodSense &ps : psa) {
-	dbgRes = ps.getRPM();
+      for (size_t j=0; j<numTrackedMotor; j++) {
+	dbgRes = psa[j].getRPM();
       }
     }
 
     //DebugTrace ("rpm = %lu w=%lu", ps[0].getRPM(), icuGetPeriodX(&ICUD8));
-    for (const PeriodSense &ps : psa) {
+    for (size_t i=0; i<numTrackedMotor; i++) {
+      const PeriodSense &ps = psa[i];
       DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu f=%lu", ps.getIndex(),
 		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
     }
