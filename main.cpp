@@ -105,23 +105,12 @@ int main(void) {
    *   RTOS is active.
    */
 
-  constexpr std::array<GpioMask, 2> mar = {{
-      {GPIOB_BASE, (1<<BUS_NBM0) | (1<<BUS_NBM1) | (1<<BUS_NBM2)},
-      {GPIOB_BASE, (1<<BUS_HALL_OR_ESC)}
-    }};
-
-  constexpr JumperConf<mar.size()> jpc(mar);
-  static_assert(jpc.areMasksValid() == true, "one or more mask are invalid, "
-		                             "all zeroes or one not contiguous");
-  
-  
-  
   consoleInit();
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);
 
   consoleLaunch();
-  DebugTrace("config nb entries  = %lu", jpc.readConf(0));
-  DebugTrace("config sensor mode = %lu", jpc.readConf(1));
+  DebugTrace("config nb entries  = %lu", JUMPERS.readConf(0));
+  DebugTrace("config sensor mode = %lu", JUMPERS.readConf(1));
   chThdSleepSeconds(1);
   ledBlink.setFlashes(2, 4);
   launchPwm();

@@ -2,6 +2,7 @@
 #include <ch.h>
 #include <hal.h>
 #include <math.h>
+#include "gpioBus.hpp"
 
 static constexpr uint32_t operator"" _pwmChannel (unsigned long long int channel)
 {
@@ -32,6 +33,11 @@ static constexpr uint32_t ERPM_RPM_RATIO     = 6UL;
 static constexpr uint32_t TIMER_WIDTH_BITS   = 16UL;
 static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
 static constexpr size_t	  TIMER_NUM_INPUT = 7UL;
+
+static constexpr std::array<GpioMask, 2> JUMPER_BUSES = {{
+    {GPIOB_BASE, (1<<BUS_NBM0) | (1<<BUS_NBM1) | (1<<BUS_NBM2)},
+    {GPIOB_BASE, (1<<BUS_HALL_OR_ESC)}
+  }};
 
 // CALCULATED CONSTANTS
 static constexpr uint32_t FREQ_AT_MAX_RPM = (MAX_RPM * ERPM_RPM_RATIO) / 60UL;
