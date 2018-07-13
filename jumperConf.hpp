@@ -13,38 +13,45 @@ template<size_t N>
 class JumperConf
 {
 public:
-  constexpr JumperConf(std::array<GpioMask, N> _ms);
-  constexpr bool areMasksValid(std::array<GpioMask, N> _ms);
+  constexpr JumperConf(const std::array<GpioMask, N>& ms);
+  constexpr bool areMasksValid(const std::array<GpioMask, N>& ms);
   constexpr bool areMasksValid(void) const  {return invalidMask;};
   ioportmask_t  readConf(size_t index) const;
 private:
-  const std::array<GpioMask, N> ms;
+  uint32_t     baseOffsets[N];
+  uint32_t     lsbIndexs[N];
+  uint32_t     widths[N];
   const  bool  invalidMask;
 };
 
 
 template<size_t N>
-constexpr JumperConf<N>::JumperConf(std::array<GpioMask, N> _ms) : ms(_ms),
-								  invalidMask(areMasksValid(_ms))
+constexpr JumperConf<N>::JumperConf(const std::array<GpioMask, N>& ms) :  baseOffsets{0},
+								   lsbIndexs{0},
+								   widths{0},
+								   invalidMask(areMasksValid(ms))
 {
 }
 
 template<size_t N>
-constexpr bool JumperConf<N>::areMasksValid(std::array<GpioMask, N> _ms)
+constexpr bool JumperConf<N>::areMasksValid(const std::array<GpioMask, N>& ms)
 {
   for (size_t i=0; i<N; i++) {
-    const ioportmask_t mask = _ms[i].second;
+    const ioportmask_t mask = ms[i].second;
     const int32_t lsbIndex =  static_cast<int32_t>(__builtin_ffs(mask)) -1;
+    const int32_t msbIndex =  32UL - __builtin_clz(mask);
+    const uint32_t width = __builtin_popcount(mask);
+    baseOffsets[i] = ms[i].first;
+    lsbIndexs[i] =  static_cast<uint32_t>(lsbIndex);
+    widths[i] = width;
+    
     if (lsbIndex < 0) 
       return false;
     
-    const int32_t msbIndex =  32UL - __builtin_clz(mask);
-    const uint32_t width = __builtin_popcount(mask);
     if (static_cast<int32_t>(width) != (msbIndex - lsbIndex))
       return false;
-
-    return true;
   }
+  return true;
 }
 
 
@@ -54,11 +61,11 @@ ioportmask_t JumperConf<N>::readConf(size_t index) const
   if (index >= N)
     return USHRT_MAX;
 
-  const ioportmask_t mask = ms[index].second;
-  const int32_t lsbIndex =  static_cast<int32_t>(__builtin_ffs(mask)) -1;
-  const uint32_t width = __builtin_popcount(mask);
-  const IOBus busSet = {(stm32_gpio_t *) ms[index].first,
-			PAL_GROUP_MASK(width), static_cast<uint32_t>(lsbIndex)};
+  const uint32_t lsbIndex =  lsbIndexs[index];
+  const uint32_t width = widths[index];
+  const uint32_t baseOffset = baseOffsets[index];
+
+  const IOBus busSet = {(stm32_gpio_t *) baseOffset, PAL_GROUP_MASK(width), lsbIndex};
 
   return palReadBus(&busSet);
 }
