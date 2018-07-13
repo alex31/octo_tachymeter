@@ -27,6 +27,7 @@ public:
   uint32_t	getRperiod(void) const {return icuGetPeriodX(icup);};
   uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
   size_t	getIndex(void) const {return icup->index;}
+  void		setDynSize(const size_t size) {dynSize=size;};
   
 private:
   void setDivider (const uint16_t divider);
@@ -36,4 +37,5 @@ private:
   ICUConfig		config;
   static CountWinAvg	winAvg[TIMER_NUM_INPUT];
   static size_t		indexer;
+  static size_t		dynSize;
 };

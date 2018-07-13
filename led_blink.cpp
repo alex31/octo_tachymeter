@@ -7,7 +7,7 @@
 #include <strings.h>
 #endif
 
-LedBlink ledBlink(LINE_C02_FLASH_LED, 2000, 600, 200);
+LedBlink ledBlink(LINE_FLASH_LED, 2000, 600, 200);
 
 uint8_t LedBlink::indexer = 0;
 

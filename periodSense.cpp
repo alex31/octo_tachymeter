@@ -9,6 +9,10 @@ PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
   osalDbgAssert((indexer < TIMER_NUM_INPUT),
 		"not enough index in array, modify NUM_INPUT in hardwareConf.hpp");
 
+  icup->index = indexer++;
+  if (icup->index > dynSize)
+    return;
+  
   config = ICUConfig {
     .mode = ICU_INPUT_ACTIVE_HIGH,
     .frequency = 560_khz,              /* real divider will be calculated dynamically  */
@@ -16,18 +20,17 @@ PeriodSense::PeriodSense(ICUDriver * const _icup, const icuchannel_t channel):
     .period_cb = [] (ICUDriver *licup) {
       winAvg[licup->index].push(icuGetPeriodX(licup));
       licup->hasOverflow = false;
-      palClearLine(LINE_C00_LED1); 
+      palClearLine(LINE_LED1); 
     } ,
     .overflow_cb =  [] (ICUDriver *licup) {
       licup->hasOverflow = true;
-      palSetLine(LINE_C00_LED1); 	
+      palSetLine(LINE_LED1); 	
     },
     .channel = channel,
     .dier = 0
   };
 
   icup->hasOverflow = false;
-  icup->index = indexer++;
 
   icuStart(icup, &config);
   
@@ -68,4 +71,5 @@ uint32_t	PeriodSense::getRPM(void) const
 
 
 CountWinAvg	PeriodSense::winAvg[TIMER_NUM_INPUT];
-size_t		PeriodSense::indexer = 0;
+size_t		PeriodSense::indexer = 0UL;
+size_t		PeriodSense::dynSize = 1UL;

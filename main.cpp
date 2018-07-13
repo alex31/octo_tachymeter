@@ -9,6 +9,7 @@
 #include "periodSense.hpp"
 #include "pwm.h"
 #include "rpmMsg.hpp"
+#include "jumperConf.hpp"
 /*
 Connecter sur la carte de dev le chip convertisseur USB série  :
   ftdi RX sur B10 (enlever le jumper)
@@ -49,7 +50,7 @@ static THD_WORKING_AREA(waBlinker, 1024);
 {
   (void)arg;
   chRegSetThreadName("blinker");
-  std::array<PeriodSense, 8> psa = {{
+  std::array<PeriodSense, 7> psa = {{
       {&ICUD1, ICU_CHANNEL_1},  // 168
 #ifndef USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
       {&ICUD2, ICU_CHANNEL_1},  // 84
@@ -103,11 +104,19 @@ int main(void) {
    * - Kernel initialization, the main() function becomes a thread and the
    *   RTOS is active.
    */
-  
+
+  const std::array<GpioMask, 2> mar = {{
+      {GPIOB, (1<<BUS_NBM0) | (1<<BUS_NBM1) | (1<<BUS_NBM2)},
+      {GPIOB, (1<<BUS_HALL_OR_ESC)}
+    }};
+
+  JumperConf<mar.size()> jpc(mar);
   consoleInit();
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);
 
   consoleLaunch();
+  DebugTrace("config nb entries  = %lu", jpc.readConf(0));
+  DebugTrace("config sensor mode = %lu", jpc.readConf(1));
   chThdSleepSeconds(1);
   ledBlink.setFlashes(2, 4);
   launchPwm();

@@ -259,7 +259,7 @@ $(OBJS): local/$(BOARD)/board.h
 
 
 local/$(BOARD)/board.h: local/$(BOARD)/board.cfg Makefile
-	boardGen.pl --no-adcp-in	$<  $@
+	boardGen.pl --no-pp-pin --no-pp-line --no-adcp-in	$<  $@
 
 stflash: all
 	@echo write $(BUILDDIR)/$(PROJECT).bin to flash memory
