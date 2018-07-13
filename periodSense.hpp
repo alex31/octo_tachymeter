@@ -21,6 +21,7 @@ using CountWinAvg = WindowMedianAverage<icucnt_t, 8, 1, Lock::DiscardIsr>;
 class PeriodSense {
 public:
   PeriodSense(ICUDriver * const _icup, const icuchannel_t channel);
+  PeriodSense(void);
   icucnt_t	getPeriodAverage(void) const;
   uint32_t	getRPM(void) const ;
   uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean();};

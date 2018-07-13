@@ -3,6 +3,13 @@
 #include <hal.h>
 #include <math.h>
 #include "gpioBus.hpp"
+#include <utility>
+
+#ifdef  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+#define ICU_NUMBER_OF_ENTRIES 7
+#else
+#define ICU_NUMBER_OF_ENTRIES 8
+#endif
 
 static constexpr uint32_t operator"" _pwmChannel (unsigned long long int channel)
 {
@@ -38,6 +45,23 @@ static constexpr std::array<GpioMask, 2> JUMPER_BUSES = {{
     {GPIOB_BASE, (1<<BUS_NBM0) | (1<<BUS_NBM1) | (1<<BUS_NBM2)},
     {GPIOB_BASE, (1<<BUS_HALL_OR_ESC)}
   }};
+
+
+using IcuEntry = std::pair<ICUDriver * const, const icuchannel_t>;
+
+static constexpr std::array<IcuEntry, ICU_NUMBER_OF_ENTRIES> ICU_TIMER = {{
+      {&ICUD1, ICU_CHANNEL_1},  // 168
+#ifndef USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+      {&ICUD2, ICU_CHANNEL_1},  // 84
+#endif
+      {&ICUD3, ICU_CHANNEL_1},  // 84
+      {&ICUD4, ICU_CHANNEL_1},  // 84
+      {&ICUD5, ICU_CHANNEL_1},  // 84
+      {&ICUD8, ICU_CHANNEL_1},  // 168
+      {&ICUD9, ICU_CHANNEL_1},  // 168
+      {&ICUD12, ICU_CHANNEL_1}, // 168
+    }} ;
+ 
 
 // CALCULATED CONSTANTS
 static constexpr uint32_t FREQ_AT_MAX_RPM = (MAX_RPM * ERPM_RPM_RATIO) / 60UL;

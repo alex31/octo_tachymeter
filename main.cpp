@@ -50,6 +50,7 @@ static THD_WORKING_AREA(waBlinker, 1024);
 {
   (void)arg;
   chRegSetThreadName("blinker");
+  
   std::array<PeriodSense, 7> psa = {{
       {&ICUD1, ICU_CHANNEL_1},  // 168
 #ifndef USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
@@ -113,7 +114,9 @@ int main(void) {
   DebugTrace("config sensor mode = %lu", JUMPERS.readConf(1));
   chThdSleepSeconds(1);
   ledBlink.setFlashes(2, 4);
+#ifdef  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
   launchPwm();
+#endif
   
   startRpmStreaming();
   // main thread does nothing
