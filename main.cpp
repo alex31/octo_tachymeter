@@ -37,10 +37,6 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
 
   * alternative au capteur effet hall : interface via isolation galvanique 
     sur une sortie controleur moteur : scanner un port en DMA (cadencé par timer)
-
-  * utiliser 4 broches (resistance zero ohm ou pont de soudure) pour coder :
-    + le type d'entrée (HALL ou ESC) : 1 bit
-    + le nombre de moteurs :  3 bits
  */
 
 volatile uint32_t dbgRes;
