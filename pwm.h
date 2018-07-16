@@ -2,7 +2,7 @@
 #include <hal.h>
 
 #pragma once
-#ifdef  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+#if  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
 
 #ifdef __cplusplus
 extern "C" {

@@ -65,8 +65,13 @@ static THD_WORKING_AREA(waBlinker, 1024);
     //DebugTrace ("rpm = %lu w=%lu", ps[0].getRPM(), icuGetPeriodX(&ICUD8));
     for (size_t i=0; i<numTrackedMotor; i++) {
       const PeriodSense &ps = psa[i];
-      DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu f=%lu", ps.getIndex(),
+#if USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS      
+      DebugTrace ("TEST: rpm[%u] = %lu rp=%lu ap=%lu psc=%lu f=%lu", ps.getIndex(),
 		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
+#else
+          DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu", ps.getIndex(),
+		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc());
+#endif      
     }
     DebugTrace("-----------------------");
     // DebugTrace ("FREQ_AT_MAX_RPM=%lu  FREQ_AT_MIN_RPM=%lu "
@@ -105,7 +110,7 @@ int main(void) {
   DebugTrace("config sensor mode = %lu", JUMPERS.readConf(1));
   chThdSleepSeconds(1);
   ledBlink.setFlashes(2, 4);
-#ifdef  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+#if  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
   launchPwm();
 #endif
   

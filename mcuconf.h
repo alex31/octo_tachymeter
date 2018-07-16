@@ -36,7 +36,7 @@
 /*
  * LOCAL define
  */
-#define	USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS TRUE
+#define	USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS FALSE
 
 
 /*

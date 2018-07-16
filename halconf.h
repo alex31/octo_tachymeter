@@ -115,8 +115,12 @@
 /**
  * @brief   Enables the PWM subsystem.
  */
+#if USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
 #if !defined(HAL_USE_PWM) || defined(__DOXYGEN__)
 #define HAL_USE_PWM                 TRUE
+#endif
+#else
+#define HAL_USE_PWM                 FALSE
 #endif
 
 /**

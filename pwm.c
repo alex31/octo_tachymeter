@@ -7,7 +7,7 @@
 #include "potentiometre.h"
 #include "pwm.h"
 
-#ifdef USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+#if USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
 
 
 static uint32_t newFreq=0;
