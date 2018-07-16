@@ -9,7 +9,7 @@
 #include "periodSense.hpp"
 #include "pwm.h"
 #include "rpmMsg.hpp"
-#include "jumperConf.hpp"
+
 /*
 Connecter sur la carte de dev le chip convertisseur USB série  :
   ftdi RX sur B10 (enlever le jumper)
@@ -46,25 +46,15 @@ static THD_WORKING_AREA(waBlinker, 1024);
 {
   (void)arg;
   chRegSetThreadName("blinker");
-  const size_t numTrackedMotor = JUMPERS.readConf(0);
+  const size_t numTrackedMotor = rpmGetNumTrackedMotors();
 
-  PeriodSense psa[numTrackedMotor];
-  for (size_t i=0; i<numTrackedMotor; i++) {
-    psa[i].setIcu(ICU_TIMER[i].first, ICU_TIMER[i].second);
-  }
-  
+   
  
   while (true) { 
     chThdSleepMilliseconds (1000);
-    for (int i=0; i<1000; i++) {
-      for (size_t j=0; j<numTrackedMotor; j++) {
-	dbgRes = psa[j].getRPM();
-      }
-    }
-
     //DebugTrace ("rpm = %lu w=%lu", ps[0].getRPM(), icuGetPeriodX(&ICUD8));
     for (size_t i=0; i<numTrackedMotor; i++) {
-      const PeriodSense &ps = psa[i];
+      const PeriodSense &ps = rpmGetPS(i);
 #if USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS      
       DebugTrace ("TEST: rpm[%u] = %lu rp=%lu ap=%lu psc=%lu f=%lu", ps.getIndex(),
 		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
@@ -103,18 +93,20 @@ int main(void) {
    */
 
   consoleInit();
-  chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);
 
   consoleLaunch();
-  DebugTrace("config nb entries  = %lu", JUMPERS.readConf(0));
-  DebugTrace("config sensor mode = %lu", JUMPERS.readConf(1));
+  rpmStartStreaming();
+  chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);
+  DebugTrace("config nb motors  = %u", rpmGetNumTrackedMotors());
+  DebugTrace("config sensor mode = %s",
+	     rpmGetSensorType() == SensorType::Esc_coupler ? "ESC Opto Coupler" :
+							     "Hall Effect Sensor");
   chThdSleepSeconds(1);
   ledBlink.setFlashes(2, 4);
 #if  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
   launchPwm();
 #endif
   
-  startRpmStreaming();
   // main thread does nothing
   chThdSleep(TIME_INFINITE);
 }
