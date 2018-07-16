@@ -82,6 +82,5 @@ SensorType	rpmGetSensorType(void)
 
     simpleMsgSend (&UARTD4, reinterpret_cast<uint8_t *>(rpmValues.data()),
 		   numTrackedMotor * (sizeof(rpmValues[0]) / sizeof(uint8_t)));
-    chThdSleepMilliseconds(1);
   }
 }
