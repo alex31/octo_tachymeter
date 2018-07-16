@@ -56,7 +56,7 @@ void	PeriodSense::setDivider(const uint16_t divider)
   const auto cr1 = icup->tim->CR1;
   icup->tim->CR1    = 0;
   icup->tim->CNT    = 0;
-  icup->tim->PSC    = divider * (icup->clock / TIMER_FREQ_IN);
+  icup->tim->PSC    = (divider * (icup->clock / TIMER_FREQ_IN)) - 1;
   icup->tim->ARR  = 0xFFFF;
   icup->tim->CR1    = cr1;
 };
