@@ -25,11 +25,6 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
 /*
 
   TODO : 
-  * coder envoi sur UART par DMA
-  * tester envoi sur UART par DMA
-
-  * tester avec un capteur à effet hall
-
   * tester la validité de la mesure en utilisant width car normalement (tester avant)
     width doit être approximativement égal à period / 2
 
