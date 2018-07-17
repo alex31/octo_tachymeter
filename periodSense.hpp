@@ -15,6 +15,7 @@ namespace Lock {
 
 // window average of 6 values with higher and lower values discarded by median filter
 using CountWinAvg = WindowMedianAverage<icucnt_t, 8, 1, Lock::DiscardIsr>;
+using ErrorWin =    WindowAverage<uint8_t, 64>;
 
 
 
@@ -25,6 +26,7 @@ public:
   icucnt_t	getPeriodAverage(void) const;
   uint32_t	getRPM(void) const ;
   uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean();};
+  uint32_t	getNumBadMeasure(void) const {return winErr[icup->index].getSum();};
   uint32_t	getRperiod(void) const {return icuGetPeriodX(icup);};
   uint32_t	getRWidth(void) const {return icuGetWidthX(icup);};
    uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
@@ -37,6 +39,7 @@ private:
 
   ICUDriver *		icup;
   ICUConfig		config;
-  static CountWinAvg	winAvg[TIMER_NUM_INPUT];
+  static CountWinAvg	winAvg[ICU_NUMBER_OF_ENTRIES];
+  static ErrorWin	winErr[ICU_NUMBER_OF_ENTRIES];
   static size_t		indexer;
 };

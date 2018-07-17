@@ -223,7 +223,7 @@ sub rpmMessageCb ($)
     my $nbMotor = length($$bufferRef) / 2;
     my $format = "S" x $nbMotor;
     my @rpms = unpack($format, $$bufferRef);
-    printf ("speeds = %s\n", join (':', @rpms)) if $rpms[1];
+    printf ("speeds = %s\n", join (':', @rpms));
 }
 
 

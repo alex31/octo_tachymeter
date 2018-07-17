@@ -28,8 +28,6 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
   * tester la validité de la mesure en utilisant width car normalement (tester avant)
     width doit être approximativement égal à period / 2
 
-  * class SensorQuality 
-
   * deux types de messages : rpm et qualité
 
   * alternative au capteur effet hall : interface via isolation galvanique 
@@ -61,9 +59,10 @@ static THD_WORKING_AREA(waBlinker, 1024);
       DebugTrace ("TEST: rpm[%u] = %lu rp=%lu ap=%lu psc=%lu f=%lu", ps.getIndex(),
 		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
 #else
-          DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu P/W=%.3f", ps.getIndex(),
+          DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu P/W=%.3f Err=%lu", ps.getIndex(),
 		      ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(),
-		      static_cast<float>(ps.getRperiod()) / ps.getRWidth());
+		      static_cast<float>(ps.getRperiod()) / ps.getRWidth(),
+		      ps.getNumBadMeasure());
 #endif      
     }
     DebugTrace("-----------------------");

@@ -5,8 +5,8 @@
 
 void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
 {
-  osalDbgAssert((indexer <= TIMER_NUM_INPUT),
-		"not enough index in array, modify NUM_INPUT in hardwareConf.hpp");
+  osalDbgAssert((indexer < ICU_NUMBER_OF_ENTRIES),
+		"not enough index in array, modify ICU_NUMBER_OF_ENTRIES in hardwareConf.hpp");
 
   icup = _icup;
   icup->index = indexer++;
@@ -16,13 +16,27 @@ void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
     .frequency = 1_mhz,              /* real divider will be calculated dynamically  */
     .width_cb = nullptr,
     .period_cb = [] (ICUDriver *licup) {
-      winAvg[licup->index].push(icuGetPeriodX(licup));
+      const uint32_t p = icuGetPeriodX(licup);
+      const uint32_t w = icuGetWidthX(licup);
+      const uint32_t r10 = (p * 10) / w;
+      if ((r10 <= MAX_PERIOD_WIDTH_RATIO_TIME10) &&
+	  (r10 >= MIN_PERIOD_WIDTH_RATIO_TIME10)) {
+	winAvg[licup->index].push(p);
+	winErr[licup->index].push(0);
+      } else {
+	winErr[licup->index].push(1);
+      }
       licup->hasOverflow = false;
-      palClearLine(LINE_LED1); 
+#ifdef TRACE
+      palClearLine(LINE_LED1);
+#endif
     } ,
     .overflow_cb =  [] (ICUDriver *licup) {
+      winErr[licup->index].push(1);
       licup->hasOverflow = true;
+#ifdef TRACE
       palSetLine(LINE_LED1); 	
+#endif
     },
     .channel = channel,
     .dier = 0
@@ -68,5 +82,6 @@ uint32_t	PeriodSense::getRPM(void) const
 
 
 
-CountWinAvg	PeriodSense::winAvg[TIMER_NUM_INPUT];
+CountWinAvg	PeriodSense::winAvg[ICU_NUMBER_OF_ENTRIES];
+ErrorWin	PeriodSense::winErr[ICU_NUMBER_OF_ENTRIES];
 size_t		PeriodSense::indexer = 0UL;

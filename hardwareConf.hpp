@@ -39,8 +39,8 @@ static constexpr uint32_t MAX_RPM = 30000UL;
 static constexpr uint32_t MOTOR_NB_MAGNETS   = 14UL;
 static constexpr uint32_t TIMER_WIDTH_BITS   = 16UL;
 static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
-static constexpr size_t	  TIMER_NUM_INPUT = 7UL;
-
+static constexpr uint32_t MIN_PERIOD_WIDTH_RATIO_TIME10 = 15UL;
+static constexpr uint32_t MAX_PERIOD_WIDTH_RATIO_TIME10 = 22UL;
 // 3 pins to code number of motor : BUS_NBM[0..3]
 // 1 pin to code HALL or ESC mode
 static constexpr std::array<GpioMask, 2> JUMPER_BUSES = {{
