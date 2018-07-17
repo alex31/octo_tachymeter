@@ -5,7 +5,7 @@
 
 void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
 {
-  osalDbgAssert((indexer < TIMER_NUM_INPUT),
+  osalDbgAssert((indexer <= TIMER_NUM_INPUT),
 		"not enough index in array, modify NUM_INPUT in hardwareConf.hpp");
 
   icup = _icup;
@@ -13,7 +13,7 @@ void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
   
   config = ICUConfig {
     .mode = ICU_INPUT_ACTIVE_HIGH,
-    .frequency = 560_khz,              /* real divider will be calculated dynamically  */
+    .frequency = 1_mhz,              /* real divider will be calculated dynamically  */
     .width_cb = nullptr,
     .period_cb = [] (ICUDriver *licup) {
       winAvg[licup->index].push(icuGetPeriodX(licup));

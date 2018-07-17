@@ -28,13 +28,20 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
   * tester la validité de la mesure en utilisant width car normalement (tester avant)
     width doit être approximativement égal à period / 2
 
+  * class SensorQuality 
+
   * deux types de messages : rpm et qualité
 
   * alternative au capteur effet hall : interface via isolation galvanique 
     sur une sortie controleur moteur : scanner un port en DMA (cadencé par timer)
- */
 
-volatile uint32_t dbgRes;
+  * portage carte devboard_M767
+
+  * hardware dédié à base de F722
+
+  * portage hardware dédié
+
+ */
 
 static THD_WORKING_AREA(waBlinker, 1024);
 [[noreturn]] static void blinker (void *arg)
@@ -54,8 +61,9 @@ static THD_WORKING_AREA(waBlinker, 1024);
       DebugTrace ("TEST: rpm[%u] = %lu rp=%lu ap=%lu psc=%lu f=%lu", ps.getIndex(),
 		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(), pwmGetFreq());
 #else
-          DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu", ps.getIndex(),
-		  ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc());
+          DebugTrace ("rpm[%u] = %lu rp=%lu ap=%lu psc=%lu P/W=%.3f", ps.getIndex(),
+		      ps.getRPM(), ps.getRperiod(), ps.getMperiod(), ps.getTimPsc(),
+		      static_cast<float>(ps.getRperiod()) / ps.getRWidth());
 #endif      
     }
     DebugTrace("-----------------------");
@@ -96,8 +104,8 @@ int main(void) {
   DebugTrace("config sensor mode = %s",
 	     rpmGetSensorType() == SensorType::Esc_coupler ? "ESC Opto Coupler" :
 							     "Hall Effect Sensor");
-  chThdSleepSeconds(1);
-  ledBlink.setFlashes(2, 4);
+  ledBlink.setFlashes(rpmGetNumTrackedMotors(),
+		      rpmGetSensorType() == SensorType::Hall_effect ? 1 : 2);
 #if  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
   launchPwm();
 #endif
