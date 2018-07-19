@@ -11,7 +11,7 @@ no warnings 'experimental::smartmatch';
 sub fletcher16 ($$);
 sub statusFunc ($$$$$$$);
 sub congestionCallback ($$$);
-sub rpmMessageCb ($);
+sub tachyMessageCb ($);
 sub initSerial ($);
 sub serialCb();
 sub getSerial();
@@ -171,7 +171,7 @@ sub serialCb()
 		$totLen += sysread (FHD, $buffer, $len-$totLen, $totLen);
 	    } while ($totLen != $len);
 	    
-	    $receivedCrc = fletcher16 (\$buffer, undef);
+	    $calculatedCrc = fletcher16 (\$buffer, undef);
 	    $state = WAIT_FOR_CHECKSUM;
 	}
 	
@@ -182,13 +182,15 @@ sub serialCb()
 	    } while ($totLen != 2);
 	    
 	    @crc = unpack ('CC', $crcBuf);
-	    $calculatedCrc =  ($crc[1] << 8)  | $crc[0];
+	    $receivedCrc =  ($crc[1] << 8)  | $crc[0];
 	    if ($calculatedCrc == $receivedCrc) {
-		rpmMessageCb (\$buffer);
+		tachyMessageCb (\$buffer);
 	    } else {
-		printf ("CRC DIFFER C:0x%x != R:0x%x\n", $calculatedCrc, $receivedCrc);
+		printf ("CRC DIFFER C:0x%x != R:0x%x (len=%d)\n", 
+			$calculatedCrc, $receivedCrc, $len);
 	    }
 	    $state = WAIT_FOR_SYNC;
+	    $buffer=undef;
 	}
     }
 }
@@ -217,13 +219,28 @@ sub fletcher16 ($$)
     return (($sum2 << 8) | $sum1);
 }
 
-sub rpmMessageCb ($)
+
+my @messagesId = ('None', 'rpm', 'error');
+sub tachyMessageCb ($)
 {
     my ($bufferRef) = @_;
-    my $nbMotor = length($$bufferRef) / 2;
-    my $format = "S" x $nbMotor;
-    my @rpms = unpack($format, $$bufferRef);
-    printf ("speeds = %s\n", join (':', @rpms));
+	
+    my $nbMotor = (length($$bufferRef)-1) / 2;
+    my ($id) = unpack('V', $$bufferRef);
+
+
+
+    if ($id == 1) {
+	my $format =  'V'. ('S' x $nbMotor);
+	my @fields = unpack($format, $$bufferRef);
+	unshift @fields;
+	printf ("RPMs = %s\n", join (':', @fields));
+    } elsif ($id == 2) {
+	my $format =  'V'. ('C' x $nbMotor);
+	my @fields = unpack($format, $$bufferRef);
+	unshift @fields;
+	printf ("ERRs = %s\n", join (':', @fields));
+    }
 }
 
 

@@ -27,26 +27,20 @@ static size_t numTrackedMotor = 0;
 static std::array<PeriodSense, ICU_NUMBER_OF_ENTRIES>  psa;
 static SensorType sensorType = SensorType::No_Init;
 
+template <typename T, size_t N, MessageId ID>
 struct StreamMessage {
-  StreamMessage(const enum MessageId id) : mid{id}, payloadSize{getPayloadSize(id)} {};
-  static  size_t getPayloadSize(const enum MessageId id) {
-    switch (id) {
-    case MessageId::NO_INIT : return 0;
-    case MessageId::RPM : return sizeof(rpmValues) + sizeof(mid);
-    case MessageId::NUM_ERRORS : return sizeof(errValues) + sizeof(mid);
-    default: return 0;
-    };
+  constexpr StreamMessage(void) : mid{ID}, hpload{0}, values{0} {}; 
+  constexpr size_t sizeOf(size_t numTracked) {
+    return (sizeof(T) * numTracked) + sizeof(mid) + sizeof(hpload);
   };
-  union {
-    std::array<uint16_t, ICU_NUMBER_OF_ENTRIES>     rpmValues;
-    std::array<uint8_t, ICU_NUMBER_OF_ENTRIES>      errValues;
-  };
+  uint8_t* data() {return reinterpret_cast<uint8_t *>(this);};
   const enum MessageId mid;
-  const size_t payloadSize;
-};
+  uint8_t hpload[3];
+  std::array<T, N>     values;
+} __attribute__ ((__packed__)) ;
 
-static StreamMessage rpmMessage(MessageId::RPM);
-static StreamMessage errMessage(MessageId::NUM_ERRORS);
+static StreamMessage<uint16_t, ICU_NUMBER_OF_ENTRIES, MessageId::RPM> rpmMessage;
+static StreamMessage<uint8_t, ICU_NUMBER_OF_ENTRIES, MessageId::NUM_ERRORS>  errMessage;
 
 static THD_WORKING_AREA(waStreamer, 1024);
 [[noreturn]] static void streamer (void *arg);
@@ -96,13 +90,36 @@ SensorType	rpmGetSensorType(void)
   (void) arg;
   
   chRegSetThreadName("streamer");
-  
+  uint32_t cnt=0;
   while (true) {
     for (size_t i=0; i<numTrackedMotor; i++) {
-      rpmMessage.rpmValues[i] = psa[i].getRPM();
+      rpmMessage.values[i] = psa[i].getRPM();
     }
+    if (not simpleMsgSend (&UARTD4, rpmMessage.data(),
+			   rpmMessage.sizeOf(numTrackedMotor))) {
+	DebugTrace ("simpleMsgSend RPM has failed");
+      }
+    
+    if ((cnt++ % 64) == 0) {
+      bool badCond=false;
+      for (size_t i=0; i<numTrackedMotor; i++) {
+	if (psa[i].getNumBadMeasure()) {
+	  badCond=true;
+	  break;
+	}
+      }
 
-    simpleMsgSend (&UARTD4, reinterpret_cast<uint8_t *>(rpmMessage.rpmValues.data()),
-		   rpmMessage.payloadSize);
+      if (badCond) {
+	for (size_t i=0; i<numTrackedMotor; i++) {
+	  errMessage.values[i] = psa[i].getNumBadMeasure();
+	}
+	if (not simpleMsgSend (&UARTD4, errMessage.data(),
+			       errMessage.sizeOf(numTrackedMotor))) {
+	  DebugTrace ("simpleMsgSend ERR has failed");
+	}
+      }
+      
+    }
+    //    chThdSleepSeconds(1);
   }
 }
