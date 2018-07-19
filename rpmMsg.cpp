@@ -29,18 +29,19 @@ static SensorType sensorType = SensorType::No_Init;
 
 template <typename T, size_t N, MessageId ID>
 struct StreamMessage {
-  constexpr StreamMessage(void) : mid{ID}, hpload{0}, values{0} {}; 
-  constexpr size_t sizeOf(size_t numTracked) {
-    return (sizeof(T) * numTracked) + sizeof(mid) + sizeof(hpload);
-  };
-  uint8_t* data() {return reinterpret_cast<uint8_t *>(this);};
+  constexpr StreamMessage(size_t len) : mid{ID}, hpload{0}, values{0}, vlen{len},
+					vsize{(sizeof(T) * len) + sizeof(mid) + sizeof(hpload)}
+					{}; 
+  size_t size(void) const {return vsize;};
+  size_t len(void) const {return vlen;};
+  const uint8_t* data() const {return reinterpret_cast<const uint8_t *>(this);};
   const enum MessageId mid;
   uint8_t hpload[3];
   std::array<T, N>     values;
+  const size_t vlen;
+  const size_t vsize;
 } __attribute__ ((__packed__)) ;
 
-static StreamMessage<uint16_t, ICU_NUMBER_OF_ENTRIES, MessageId::RPM> rpmMessage;
-static StreamMessage<uint8_t, ICU_NUMBER_OF_ENTRIES, MessageId::NUM_ERRORS>  errMessage;
 
 static THD_WORKING_AREA(waStreamer, 1024);
 [[noreturn]] static void streamer (void *arg);
@@ -85,18 +86,32 @@ SensorType	rpmGetSensorType(void)
   return sensorType;
 }
 
+
+template <typename F>
+using ptrToMethod = uint32_t (F::*) (void) const;
+
+template <typename T, size_t N, MessageId ID, typename F, size_t FN>
+void copyMsg(StreamMessage<T, N, ID>& streamMsg, const std::array<F, FN>& arr, ptrToMethod<F> getter)
+{
+  for (size_t i=0; i<streamMsg.len(); i++) {
+    streamMsg.values[i] = (arr[i].*getter) ();
+  }
+}
+
+
 [[noreturn]] static void streamer (void *arg)
 {
   (void) arg;
   
   chRegSetThreadName("streamer");
+  StreamMessage<uint16_t, ICU_NUMBER_OF_ENTRIES, MessageId::RPM> rpmMessage(numTrackedMotor);
+  StreamMessage<uint8_t, ICU_NUMBER_OF_ENTRIES, MessageId::NUM_ERRORS> errMessage(numTrackedMotor);
+
   uint32_t cnt=0;
   while (true) {
-    for (size_t i=0; i<numTrackedMotor; i++) {
-      rpmMessage.values[i] = psa[i].getRPM();
-    }
+    copyMsg(rpmMessage, psa, &PeriodSense::getRPM);
     if (not simpleMsgSend (&UARTD4, rpmMessage.data(),
-			   rpmMessage.sizeOf(numTrackedMotor))) {
+			   rpmMessage.size())) {
 	DebugTrace ("simpleMsgSend RPM has failed");
       }
     
@@ -110,11 +125,9 @@ SensorType	rpmGetSensorType(void)
       }
 
       if (badCond) {
-	for (size_t i=0; i<numTrackedMotor; i++) {
-	  errMessage.values[i] = psa[i].getNumBadMeasure();
-	}
+	copyMsg(errMessage, psa, &PeriodSense::getNumBadMeasure);
 	if (not simpleMsgSend (&UARTD4, errMessage.data(),
-			       errMessage.sizeOf(numTrackedMotor))) {
+			       errMessage.size())) {
 	  DebugTrace ("simpleMsgSend ERR has failed");
 	}
       }

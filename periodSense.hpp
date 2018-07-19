@@ -29,7 +29,7 @@ public:
   uint32_t	getNumBadMeasure(void) const {return winErr[icup->index].getSum();};
   uint32_t	getRperiod(void) const {return icuGetPeriodX(icup);};
   uint32_t	getRWidth(void) const {return icuGetWidthX(icup);};
-   uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
+  uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
   size_t	getIndex(void) const {return icup->index;}
   size_t	getDynSize(void) {return indexer;};
   
