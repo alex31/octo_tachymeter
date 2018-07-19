@@ -9,6 +9,7 @@
 #include "simpleSerialMessage.h"
 #include "periodSense.hpp"
 
+enum class MessageId : std::uint8_t {NO_INIT=0, RPM, NUM_ERRORS};
 
 static constexpr UARTConfig config  = {
 				   .txend1_cb =nullptr,
@@ -23,9 +24,30 @@ static constexpr UARTConfig config  = {
 };
 
 static size_t numTrackedMotor = 0;
-static std::array<uint16_t, ICU_NUMBER_OF_ENTRIES>     rpmValues;
 static std::array<PeriodSense, ICU_NUMBER_OF_ENTRIES>  psa;
 static SensorType sensorType = SensorType::No_Init;
+
+struct StreamMessage {
+  StreamMessage(const enum MessageId id) : mid{id}, payloadSize{getPayloadSize(id)} {};
+  static  size_t getPayloadSize(const enum MessageId id) {
+    switch (id) {
+    case MessageId::NO_INIT : return 0;
+    case MessageId::RPM : return sizeof(rpmValues) + sizeof(mid);
+    case MessageId::NUM_ERRORS : return sizeof(errValues) + sizeof(mid);
+    default: return 0;
+    };
+  };
+  union {
+    std::array<uint16_t, ICU_NUMBER_OF_ENTRIES>     rpmValues;
+    std::array<uint8_t, ICU_NUMBER_OF_ENTRIES>      errValues;
+  };
+  const enum MessageId mid;
+  const size_t payloadSize;
+};
+
+static StreamMessage rpmMessage(MessageId::RPM);
+static StreamMessage errMessage(MessageId::NUM_ERRORS);
+
 static THD_WORKING_AREA(waStreamer, 1024);
 [[noreturn]] static void streamer (void *arg);
 
@@ -77,10 +99,10 @@ SensorType	rpmGetSensorType(void)
   
   while (true) {
     for (size_t i=0; i<numTrackedMotor; i++) {
-      rpmValues[i] = psa[i].getRPM();
+      rpmMessage.rpmValues[i] = psa[i].getRPM();
     }
 
-    simpleMsgSend (&UARTD4, reinterpret_cast<uint8_t *>(rpmValues.data()),
-		   numTrackedMotor * (sizeof(rpmValues[0]) / sizeof(uint8_t)));
+    simpleMsgSend (&UARTD4, reinterpret_cast<uint8_t *>(rpmMessage.rpmValues.data()),
+		   rpmMessage.payloadSize);
   }
 }
