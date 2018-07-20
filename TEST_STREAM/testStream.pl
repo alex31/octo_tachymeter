@@ -225,7 +225,10 @@ my @messagesId = ('None', 'rpm', 'error');
 sub tachyMessageCb ($)
 {
     my ($bufferRef) = @_;
+ 
     state $cnt=0;
+
+    # COUNT CODE BEGIN
     # state $ts = clock_gettime();
     
     # $cnt++;
@@ -236,7 +239,9 @@ sub tachyMessageCb ($)
     # 	$cnt=0;
     # 	$ts = clock_gettime();
     # }
-	
+    # return;
+    # COUNT CODE END
+    
     return	if (($cnt++ % 128) != 0) ;
     
     my $nbMotor = (length($$bufferRef)-1) / 2;

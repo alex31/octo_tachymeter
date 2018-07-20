@@ -2,7 +2,6 @@
 #include <hal.h>
 #include "stdutil.h"
 #include "led_blink.hpp"
-#include <stdnoreturn.h>
 #ifdef TRACE
 #include <strings.h>
 #endif
@@ -14,7 +13,7 @@ uint8_t LedBlink::indexer = 0;
 void  LedBlink::launchThread(void)
 {
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO,
-		    [] (void *arg) {
+		     []  (void *arg) [[noreturn]] {
 		      const LedBlink *led = static_cast<LedBlink *>(arg);
 		      led->thdBlinkLed();
 		    },
@@ -22,7 +21,7 @@ void  LedBlink::launchThread(void)
 }
 
 
-_Noreturn void LedBlink::thdBlinkLed (void) const
+[[noreturn]] void LedBlink::thdBlinkLed (void) const
 {
   //  const LedBlink *ledBlink = (LedBlink *) arg;
 

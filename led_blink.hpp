@@ -31,7 +31,7 @@ private:
 #ifdef TRACE
   char name[11] = "blinkLed_#";
 #endif
-  void thdBlinkLed  (void) const;
+  [[noreturn]] void thdBlinkLed  (void) const;
   static uint8_t indexer;
 };
 

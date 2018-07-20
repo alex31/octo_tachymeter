@@ -117,7 +117,7 @@ static void copyValToMsg(StreamMessage<T, N, ID>& streamMsg, const std::array<F,
 	DebugTrace ("simpleMsgSend RPM has failed");
       }
 
-    // if there is an error, it will be detected before outing window
+    // if there is an error, message will be sent before error get out the window
     if ((cnt++ % ErrorWin::size()) == 0) {
       if (std::accumulate(psa.begin(), psa.begin()+numTrackedMotor,
 			  0UL, // initialisation value of accumulator

@@ -41,11 +41,14 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
 
  */
 
+// all this if for tuning, will not be compiled in production code
+#ifdef TRACE
 static THD_WORKING_AREA(waBlinker, 1024);
 [[noreturn]] static void blinker (void *arg)
 {
   (void)arg;
   chRegSetThreadName("blinker");
+
   const size_t numTrackedMotor = rpmGetNumTrackedMotors();
 
    
@@ -73,6 +76,7 @@ static THD_WORKING_AREA(waBlinker, 1024);
     // 		TIM_DIVIDER, NB_TICKS_AT_MAX_RPM);
   }
 }
+#endif
 
 void _init_chibios() __attribute__ ((constructor(101)));
 void _init_chibios() {
@@ -94,15 +98,22 @@ int main(void) {
    *   RTOS is active.
    */
 
+#ifdef TRACE
   consoleInit();
-
   consoleLaunch();
+#endif
+  
   rpmStartStreaming();
+  
+#ifdef TRACE
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);
+  
   DebugTrace("config nb motors  = %u", rpmGetNumTrackedMotors());
   DebugTrace("config sensor mode = %s",
 	     rpmGetSensorType() == SensorType::Esc_coupler ? "ESC Opto Coupler" :
-							     "Hall Effect Sensor");
+	     "Hall Effect Sensor");
+#endif
+  
   ledBlink.setFlashes(rpmGetNumTrackedMotors(),
 		      rpmGetSensorType() == SensorType::Hall_effect ? 1 : 2);
 #if  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
