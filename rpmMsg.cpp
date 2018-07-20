@@ -86,12 +86,15 @@ SensorType	rpmGetSensorType(void)
   return sensorType;
 }
 
-
+/*
+  template helper function to copy data from array of object via a getter method, 
+  to an std:array of values in a message object
+ */
 template <typename F>
 using ptrToMethod = uint32_t (F::*) (void) const;
 
 template <typename T, size_t N, MessageId ID, typename F, size_t FN>
-void copyMsg(StreamMessage<T, N, ID>& streamMsg, const std::array<F, FN>& arr, ptrToMethod<F> getter)
+static void copyValToMsg(StreamMessage<T, N, ID>& streamMsg, const std::array<F, FN>& arr, ptrToMethod<F> getter)
 {
   for (size_t i=0; i<streamMsg.len(); i++) {
     streamMsg.values[i] = (arr[i].*getter) ();
@@ -109,27 +112,22 @@ void copyMsg(StreamMessage<T, N, ID>& streamMsg, const std::array<F, FN>& arr, p
 
   uint32_t cnt=0;
   while (true) {
-    copyMsg(rpmMessage, psa, &PeriodSense::getRPM);
-    if (not simpleMsgSend (&UARTD4, rpmMessage.data(),
-			   rpmMessage.size())) {
+    copyValToMsg(rpmMessage, psa, &PeriodSense::getRPM);
+    if (not simpleMsgSend (&UARTD4, rpmMessage.data(), rpmMessage.size())) {
 	DebugTrace ("simpleMsgSend RPM has failed");
       }
-    
-    if ((cnt++ % 64) == 0) {
-      bool badCond=false;
-      for (size_t i=0; i<numTrackedMotor; i++) {
-	if (psa[i].getNumBadMeasure()) {
-	  badCond=true;
-	  break;
-	}
-      }
 
-      if (badCond) {
-	copyMsg(errMessage, psa, &PeriodSense::getNumBadMeasure);
-	if (not simpleMsgSend (&UARTD4, errMessage.data(),
-			       errMessage.size())) {
+    // if there is an error, it will be detected before outing window
+    if ((cnt++ % ErrorWin::size()) == 0) {
+      if (std::accumulate(psa.begin(), psa.begin()+numTrackedMotor,
+			  0UL, // initialisation value of accumulator
+			  [](uint32_t a, auto b) {
+			    return a + b.getNumBadMeasure(); // accumulates all errors
+			  })) {
+	copyValToMsg(errMessage, psa, &PeriodSense::getNumBadMeasure);
+	if (not simpleMsgSend (&UARTD4, errMessage.data(), errMessage.size())) {
 	  DebugTrace ("simpleMsgSend ERR has failed");
-	}
+	};
       }
       
     }
