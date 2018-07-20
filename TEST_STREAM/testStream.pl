@@ -219,27 +219,41 @@ sub fletcher16 ($$)
     return (($sum2 << 8) | $sum1);
 }
 
-
+ use Time::HiRes qw( clock_gettime clock_getres clock_nanosleep
+                             ITIMER_REAL ITIMER_VIRTUAL ITIMER_PROF ITIMER_REALPROF );
 my @messagesId = ('None', 'rpm', 'error');
 sub tachyMessageCb ($)
 {
     my ($bufferRef) = @_;
+    state $cnt=0;
+    # state $ts = clock_gettime();
+    
+    # $cnt++;
+    # my $diff = clock_gettime() - $ts;
+
+    # if (($cnt % 1000) == 0) {
+    # 	printf ("%d mess/second\n", $cnt/$diff);
+    # 	$cnt=0;
+    # 	$ts = clock_gettime();
+    # }
 	
+    return	if (($cnt++ % 128) != 0) ;
+    
     my $nbMotor = (length($$bufferRef)-1) / 2;
     my ($id) = unpack('V', $$bufferRef);
-
-
-
+    
+    
+    
     if ($id == 1) {
-	my $format =  'V'. ('S' x $nbMotor);
-	my @fields = unpack($format, $$bufferRef);
-	unshift @fields;
+    	my $format =  'V'. ('S' x $nbMotor);
+    	my @fields = unpack($format, $$bufferRef);
+    	unshift @fields;
 	printf ("RPMs = %s\n", join (':', @fields));
     } elsif ($id == 2) {
-	my $format =  'V'. ('C' x $nbMotor);
-	my @fields = unpack($format, $$bufferRef);
-	unshift @fields;
-	printf ("ERRs = %s\n", join (':', @fields));
+    	my $format =  'V'. ('C' x $nbMotor);
+    	my @fields = unpack($format, $$bufferRef);
+    	unshift @fields;
+    	printf ("ERRs = %s\n", join (':', @fields));
     }
 }
 
