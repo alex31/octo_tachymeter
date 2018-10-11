@@ -117,7 +117,7 @@ sub initSerial ($)
 	return undef;
     }
 
-#port configuration 115200/8/N/1
+#port configuration 230400/8/N/1
     $port->databits(8);
     $port->baudrate(230400);
     $port->parity("none");
@@ -221,7 +221,7 @@ sub fletcher16 ($$)
 
  use Time::HiRes qw( clock_gettime clock_getres clock_nanosleep
                              ITIMER_REAL ITIMER_VIRTUAL ITIMER_PROF ITIMER_REALPROF );
-my @messagesId = ('None', 'rpm', 'error');
+my @messagesId = ('rpm', 'error');
 sub tachyMessageCb ($)
 {
     my ($bufferRef) = @_;
@@ -249,12 +249,12 @@ sub tachyMessageCb ($)
     
     
     
-    if ($id == 1) {
+    if ($id == 0) {
     	my $format =  'V'. ('S' x $nbMotor);
     	my @fields = unpack($format, $$bufferRef);
     	unshift @fields;
 	printf ("RPMs = %s\n", join (':', @fields));
-    } elsif ($id == 2) {
+    } elsif ($id == 1) {
     	my $format =  'V'. ('C' x $nbMotor);
     	my @fields = unpack($format, $$bufferRef);
     	unshift @fields;

@@ -40,7 +40,7 @@ endif
 
 # C++ specific options here (added to USE_OPT).
 ifeq ($(USE_CPPOPT),)
-  USE_CPPOPT = -std=gnu++17 -fno-rtti -fno-exceptions 
+  USE_CPPOPT = -std=gnu++17 -fno-rtti -fno-exceptions -fno-threadsafe-statics
 endif
 
 # Enable this if you want the linker to remove unused code and data
@@ -127,6 +127,7 @@ include $(CHIBIOS)/os/hal/osal/rt/osal.mk
 include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
+include $(VARIOUS)/serial_message/serial_message.mk
 
 
 # Define linker script file here
@@ -141,12 +142,12 @@ CSRC = $(STARTUPSRC) \
        $(HALSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
+       $(VARIOUS_CSRC) \
        $(CHIBIOS)/os/various/syscalls.c \
        $(VARIOUS)/stdutil.c \
        $(VARIOUS)/printf.c \
        $(VARIOUS)/microrl/microrlShell.c \
        $(VARIOUS)/microrl/microrl.c \
-       $(VARIOUS)/simpleSerialMessage.c \
        ttyConsole.c \
        globalVar.c \
        potentiometre.c \
@@ -154,7 +155,9 @@ CSRC = $(STARTUPSRC) \
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
-CPPSRC =	led_blink.cpp \
+CPPSRC =	$(VARIOUS_CPPSRC) \
+		common/messageImplChibios.cpp \
+		led_blink.cpp \
 		periodSense.cpp \
 		rpmMsg.cpp \
 		main.cpp
@@ -184,7 +187,8 @@ ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = $(CHIBIOS)/os/license $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(TESTINC) \
-         $(CHIBIOS)/os/various $(VARIOUS)
+         $(CHIBIOS)/os/various $(VARIOUS) $(VARIOUS_INCL) \
+	 ./common
 
 #
 # Project, sources and paths
