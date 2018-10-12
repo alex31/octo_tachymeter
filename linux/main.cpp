@@ -15,6 +15,10 @@ int main(int argc, char* argv[])
   
   messageInit(device);
 
-  while (true)
-    sleep (3600);
+  while (true) {
+    FrameMsgSendObject<Msg_MessPerSecond>::send({.value = 10});
+    sleep (5);
+    FrameMsgSendObject<Msg_MessPerSecond>::send({.value = 1000});
+    sleep (5);
+  }
 }

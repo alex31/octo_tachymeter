@@ -8,6 +8,7 @@
 #include "rpmMsg.hpp"
 #include "periodSense.hpp"
 #include "messageImplChibios.hpp"
+#include "userParameters.hpp"
 
 
 static size_t numTrackedMotor = 0;
@@ -87,7 +88,9 @@ static void copyValToMsg(T& msg_s, const std::array<F, FN>& arr,
   Errors errors;
   Rpms   rpms;
   uint32_t cnt=0;
+  systime_t ts;
   while (true) {
+    ts = chVTGetSystemTimeX();
     copyValToMsg(rpms, psa, &PeriodSense::getRPM);
     FrameMsgSendObject<Msg_Rpms>::send(rpms);
 
@@ -104,6 +107,6 @@ static void copyValToMsg(T& msg_s, const std::array<F, FN>& arr,
       }
       
     }
-    chThdSleepMilliseconds(10);
+    chThdSleepUntilWindowed(ts, ts+userParam.getTicksBetweenMessages());
   }
 }

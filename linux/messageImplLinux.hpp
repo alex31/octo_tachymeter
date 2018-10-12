@@ -23,3 +23,10 @@ Derive_DynMsg(Rpms)
   printf ("\n");
 }
 };
+
+
+
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(MessPerSecond)
+};
+

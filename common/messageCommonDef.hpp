@@ -16,3 +16,8 @@ struct __attribute__((packed)) Rpms {
   
   std::array<AType, ASize> values;
 };
+
+struct __attribute__((packed)) MessPerSecond {
+  uint16_t value;
+};
+

@@ -156,6 +156,7 @@ CSRC = $(STARTUPSRC) \
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
 CPPSRC =	$(VARIOUS_CPPSRC) \
+                userParameters.cpp \
 		common/messageImplChibios.cpp \
 		led_blink.cpp \
 		periodSense.cpp \

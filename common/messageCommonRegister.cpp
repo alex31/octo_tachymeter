@@ -4,5 +4,6 @@ void messageInit(const char* device)
 
   msgRegister<Msg_Errors>();
   msgRegister<Msg_Rpms>();
+  msgRegister<Msg_MessPerSecond>();
   FrameMsgReceive::launchMillFrameThread();
 }
