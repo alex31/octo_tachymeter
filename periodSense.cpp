@@ -1,6 +1,8 @@
 #include <ch.h>
 #include <hal.h>
 #include "periodSense.hpp"
+#include "userParameters.hpp"
+
 #include <climits>
 
 void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
@@ -49,7 +51,7 @@ void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
   osalDbgAssert((icup->clock ==  TIMER_FREQ_IN) || (icup->clock == (2UL * TIMER_FREQ_IN)),
 		 "TIMER_FREQ_IN not compatible with timer source clock");
 
-  setDivider(TIM_DIVIDER);
+  setDivider(calcParam.getTimDivider());
   icuStartCapture(icup);
   icuEnableNotifications(icup);
 }
@@ -77,7 +79,7 @@ void	PeriodSense::setDivider(const uint16_t divider)
 
 uint32_t	PeriodSense::getRPM(void) const
 {
-  return  WIDTH_ONE_RPM / getPeriodAverage();
+  return  calcParam.getWidthOneRpm() / getPeriodAverage();
 }
 
 

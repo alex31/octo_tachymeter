@@ -11,6 +11,9 @@
 #define ICU_NUMBER_OF_ENTRIES 8
 #endif
 
+enum class SensorType {Hall_effect, Esc_coupler, No_Init};
+enum class RunningState {Stop, Run, Error};
+
 static constexpr uint32_t operator"" _pwmChannel (unsigned long long int channel)
 {
   return channel - 1U;
@@ -34,9 +37,12 @@ static constexpr uint32_t operator"" _percent (unsigned long long int freq)
 
 
 // USER EDITABLE CONSTANT
-static constexpr uint32_t MIN_RPM = 100UL;
-static constexpr uint32_t MAX_RPM = 30000UL;
-static constexpr uint32_t MOTOR_NB_MAGNETS   = 14UL;
+static constexpr SensorType INIT_SENSOR_TYPE = SensorType::Hall_effect;
+static constexpr RunningState INIT_RUNNING_STATE = RunningState::Run;
+
+static constexpr uint32_t INIT_MIN_RPM = 100UL;
+static constexpr uint32_t INIT_MAX_RPM = 30000UL;
+static constexpr uint32_t INIT_MOTOR_NB_MAGNETS   = 14UL;
 static constexpr uint32_t TIMER_WIDTH_BITS   = 16UL;
 static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
 static constexpr uint32_t MIN_PERIOD_WIDTH_RATIO_TIME10 = 15UL;
@@ -65,10 +71,4 @@ static constexpr std::array<IcuEntry, ICU_NUMBER_OF_ENTRIES> ICU_TIMER = {{
     }} ;
  
 
-// CALCULATED CONSTANTS
-static constexpr uint32_t FREQ_AT_MAX_RPM = (MAX_RPM * MOTOR_NB_MAGNETS) / 60UL;
-static constexpr uint32_t FREQ_AT_MIN_RPM = (MIN_RPM * MOTOR_NB_MAGNETS) / 60UL;
-static constexpr uint32_t TICK_AT_MIN_RPM = TIMER_FREQ_IN / FREQ_AT_MIN_RPM;
-static constexpr uint32_t TIM_DIVIDER = ceilf (TICK_AT_MIN_RPM / powf(2, TIMER_WIDTH_BITS));
-static constexpr uint32_t NB_TICKS_AT_MAX_RPM =  powf(2.0f, TIMER_WIDTH_BITS) * MIN_RPM / MAX_RPM;
-static constexpr uint32_t WIDTH_ONE_RPM = TIMER_FREQ_IN  * 60ULL / TIM_DIVIDER / MOTOR_NB_MAGNETS;
+

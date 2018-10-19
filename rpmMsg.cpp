@@ -24,6 +24,7 @@ static THD_WORKING_AREA(waStreamer, 1024);
 void rpmStartStreaming (void)
 {
   messageInit();
+  calcParam.cache();
 
   numTrackedMotor = JUMPERS.readConf(0) + 1; // [1 .. 2^^3]
   sensorType = JUMPERS.readConf(1) ?  SensorType::Esc_coupler : SensorType::Hall_effect;

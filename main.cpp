@@ -28,10 +28,12 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
   * tester la validité de la mesure en utilisant width car normalement (tester avant)
     width doit être approximativement égal à period / 2
 
-  * deux types de messages : rpm et qualité
-
   * alternative au capteur effet hall : interface via isolation galvanique 
-    sur une sortie controleur moteur : scanner un port en DMA (cadencé par timer)
+    sur une sortie controleur moteur sur entrée timer (la même que pour le pwm)
+    ° soit sous interruption (attention à l'avalanche d'IT possible)
+      50khz*8 = 400.000 IT/seconde => pas plus de 100 cycles d'horloge par IT, l'algo doit être
+      simplissime
+    ° soit en dma (on gagne les cycles d'entrée sortie de l'IT) 
 
   * portage carte devboard_M767
 
