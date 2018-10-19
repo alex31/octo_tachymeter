@@ -18,8 +18,32 @@ Derive_DynMsg(Rpms)
 };
 
 Derive_Msg(MessPerSecond)
- void  runOnRecept(void) const final {
+void  runOnRecept(void) const final {
   userParam.setMessPerSecond(data->value);
 }
+};
 
+Derive_Msg(StartStopMeasure)
+void  runOnRecept(void) const final {
+  if (userParam.getRunningState() != data->runningState) {
+    userParam.setRunningState(data->runningState);
+    if (data->runningState == RunningState::Stop) {
+      // stop thread
+    } else if (data->runningState == RunningState::Run) {
+      // launch thread
+      // the launch method has to verify that thread is stopped
+    }
+  }
+}
+};
+
+Derive_Msg(MotorParameters)
+void  runOnRecept(void) const final {
+  if (userParam.getRunningState() ==  RunningState::Stop) {
+    userParam.setMinRpm(data->minRpm);
+    userParam.setMaxRpm(data->maxRpm);
+    userParam.setMotorNbMagnets(data->motorNbMagnets);
+    userParam.setSensorType(data->sensorType);
+  }
+}
 };

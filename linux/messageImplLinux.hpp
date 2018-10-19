@@ -30,3 +30,10 @@ Derive_DynMsg(Rpms)
 Derive_Msg(MessPerSecond)
 };
 
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(StartStopMeasure)
+};
+
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(MotorParameters)
+};

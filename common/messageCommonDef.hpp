@@ -1,4 +1,5 @@
 #pragma once
+#include "hardwareConf.hpp"
 
 
 struct __attribute__((packed)) Errors {
@@ -19,5 +20,16 @@ struct __attribute__((packed)) Rpms {
 
 struct __attribute__((packed)) MessPerSecond {
   uint16_t value;
+};
+
+struct __attribute__((packed)) StartStopMeasure {
+  RunningState runningState;
+};
+
+struct __attribute__((packed)) MotorParameters {
+  uint32_t minRpm;
+  uint32_t maxRpm;
+  uint32_t motorNbMagnets;
+  SensorType sensorType;
 };
 

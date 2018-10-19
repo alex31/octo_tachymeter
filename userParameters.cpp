@@ -1,4 +1,5 @@
 #include "userParameters.hpp"
+#include <cmath>
 
 UserParam userParam;
 CalculatedParam calcParam;

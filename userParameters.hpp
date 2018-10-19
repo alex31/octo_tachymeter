@@ -1,7 +1,11 @@
 #pragma once
+#include "hardwareConf.hpp"
+
 #include <ch.h>
 #include <hal.h>
-#include "hardwareConf.hpp"
+
+static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
+
 
 class UserParam {
 public:
@@ -25,11 +29,13 @@ public:
   
 private:
   uint32_t ticksBetweenMessages = 1000;
-  SensorType sensorType = INIT_SENSOR_TYPE;
-  RunningState runningState =  INIT_RUNNING_STATE;
+
   uint32_t minRpm = INIT_MIN_RPM;
   uint32_t maxRpm = INIT_MAX_RPM;
   uint32_t motorNbMagnets = INIT_MOTOR_NB_MAGNETS;
+  SensorType sensorType = INIT_SENSOR_TYPE;
+
+  RunningState runningState =  INIT_RUNNING_STATE;
 };
 
 extern UserParam userParam;

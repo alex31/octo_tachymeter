@@ -4,6 +4,13 @@
 #include "windowsAverage.hpp"
 #include "hardwareConf.hpp"
 
+#if  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+#define ICU_NUMBER_OF_ENTRIES 7
+#else
+#define ICU_NUMBER_OF_ENTRIES 8
+#endif
+
+
 namespace Lock {
   class DiscardIsr {
     public:
