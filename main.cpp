@@ -9,6 +9,9 @@
 #include "periodSense.hpp"
 #include "pwm.h"
 #include "rpmMsg.hpp"
+#include "userParameters.hpp"
+#include "jumperConf.hpp"
+#include "messageImplChibios.hpp"
 
 /*
 Connecter sur la carte de dev le chip convertisseur USB série  :
@@ -90,7 +93,8 @@ void _init_chibios() {
 
 
 
-int main(void) {
+int main(void)
+{
 
     /*
    * System initializations.
@@ -104,8 +108,16 @@ int main(void) {
   consoleInit();
   consoleLaunch();
 #endif
-  
-  rpmStartStreaming();
+
+  messageInit();
+  userParam.setNbMotors(JUMPERS.readConf(0) + 1);
+  userParam.setSensorType(JUMPERS.readConf(1) ?
+			  SensorType::Esc_coupler : SensorType::Hall_effect);
+  if (INIT_RUNNING_STATE == RunningState::Run) {
+    rpmStartStreaming();
+  } else {
+    userParam.setRunningState(RunningState::Stop);
+  }
   
 #ifdef TRACE
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);

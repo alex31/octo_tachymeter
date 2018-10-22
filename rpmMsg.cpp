@@ -4,11 +4,10 @@
 #include "globalVar.h"
 #include "stdutil.h"
 #include "hardwareConf.hpp"
-#include "jumperConf.hpp"
 #include "rpmMsg.hpp"
 #include "periodSense.hpp"
-#include "messageImplChibios.hpp"
 #include "userParameters.hpp"
+#include "messageImplChibios.hpp"
 
 
 using IcuEntry = std::pair<ICUDriver * const, const icuchannel_t>;
@@ -26,56 +25,67 @@ static constexpr std::array<IcuEntry, ICU_NUMBER_OF_ENTRIES> ICU_TIMER = {{
       {&ICUD12, ICU_CHANNEL_1}, // 168
     }} ;
 
-static size_t numTrackedMotor = 0;
+//static size_t numTrackedMotor = 0;
 static std::array<PeriodSense, ICU_NUMBER_OF_ENTRIES>  psa;
-static SensorType sensorType = SensorType::No_Init;
+//static SensorType sensorType = SensorType::No_Init;
+static thread_t	  *streamerThd = nullptr;
 
 static_assert(Rpms::ASize >= ICU_NUMBER_OF_ENTRIES,
 	      "Errors/Rpms array size should be >= ICU_NUMBER_OF_ENTRIES");
 
 static THD_WORKING_AREA(waStreamer, 1024);
-[[noreturn]] static void streamer (void *arg);
+static void hallSensorStreamer (void *arg);
 
 void rpmStartStreaming (void)
 {
-  messageInit();
+  //  numTrackedMotor = JUMPERS.readConf(0) + 1; // [1 .. 2^^3]
+  //  sensorType = JUMPERS.readConf(1) ?  SensorType::Esc_coupler : SensorType::Hall_effect;
+  if (streamerThd != nullptr)
+    return;
+
+  userParam.setRunningState(RunningState::Run);
   calcParam.cache();
-
-  numTrackedMotor = JUMPERS.readConf(0) + 1; // [1 .. 2^^3]
-  sensorType = JUMPERS.readConf(1) ?  SensorType::Esc_coupler : SensorType::Hall_effect;
-
-  if (sensorType == SensorType::Esc_coupler) {
+  
+  if (userParam.getSensorType() == SensorType::Esc_coupler) {
     while (true) {
       chThdSleepSeconds(1);
       DebugTrace ("ESC Opto Coupler sensing not yet implemented");
     }
+  } else {
+    streamerThd = chThdCreateStatic(waStreamer, sizeof(waStreamer),
+				    NORMALPRIO, &hallSensorStreamer, NULL);
   }
-  
-  for (size_t i=0; i<numTrackedMotor; i++) {
-    psa[i].setIcu(ICU_TIMER[i].first, ICU_TIMER[i].second);
-  }
-  
-  chThdCreateStatic(waStreamer, sizeof(waStreamer), NORMALPRIO, &streamer, NULL);
 }
+
+void rpmStopStreaming (void)
+{
+  if (streamerThd != nullptr) {
+    chThdTerminate(streamerThd);
+    chThdWait(streamerThd);
+    streamerThd = nullptr;
+    userParam.setRunningState(RunningState::Stop);
+  }
+}
+
 
 PeriodSense&    rpmGetPS(size_t index)
 {
-  return (index < numTrackedMotor) ? psa[index] : psa[0];
+  return (index < userParam.getNbMotors()) ? psa[index] : psa[0];
 }  
 
 uint16_t	rpmGetRPM(size_t index)
 {
-  return (index < numTrackedMotor) ? psa[index].getRPM() : 0;
+  return (index < userParam.getNbMotors()) ? psa[index].getRPM() : 0;
 }
 
 size_t		rpmGetNumTrackedMotors(void)
 {
-  return numTrackedMotor;
+  return userParam.getNbMotors();
 }
 
 SensorType	rpmGetSensorType(void)
 {
-  return sensorType;
+  return userParam.getSensorType();
 }
 
 /*
@@ -89,23 +99,30 @@ template <typename T, typename F, size_t FN>
 static void copyValToMsg(T& msg_s, const std::array<F, FN>& arr,
 			 ptrToMethod<F> getter)
 {
-  for (size_t i=0; i<numTrackedMotor; i++) {
+  for (size_t i=0; i<userParam.getNbMotors(); i++) {
     msg_s.values[i] = (arr[i].*getter) ();
   }
-  msg_s.dynSize = numTrackedMotor;
+  msg_s.dynSize = userParam.getNbMotors();
 }
 
 
-[[noreturn]] static void streamer (void *arg)
+static void hallSensorStreamer (void *arg)
 {
   (void) arg;
   
-  chRegSetThreadName("streamer");
+  chRegSetThreadName("hallSensorStreamer");
+  calcParam.cache();
+
   Errors errors;
   Rpms   rpms;
   uint32_t cnt=0;
   systime_t ts;
-  while (true) {
+
+  for (size_t i=0; i<userParam.getNbMotors(); i++) {
+    psa[i].setIcu(ICU_TIMER[i].first, ICU_TIMER[i].second);
+  }
+  
+  while (not chThdShouldTerminateX()) {
     ts = chVTGetSystemTimeX();
     copyValToMsg(rpms, psa, &PeriodSense::getRPM);
     FrameMsgSendObject<Msg_Rpms>::send(rpms);
@@ -113,7 +130,7 @@ static void copyValToMsg(T& msg_s, const std::array<F, FN>& arr,
 
     // if there is an error, message will be sent before error get out the window
     if ((cnt++ % ErrorWin::size()) == 0) {
-      if (std::accumulate(psa.begin(), psa.begin()+numTrackedMotor,
+      if (std::accumulate(psa.begin(), psa.begin()+userParam.getNbMotors(),
 			  0UL, // initialisation value of accumulator
 			  [](uint32_t a, auto b) {
 			    return a + b.getNumBadMeasure(); // accumulates all errors
@@ -125,4 +142,5 @@ static void copyValToMsg(T& msg_s, const std::array<F, FN>& arr,
     }
     chThdSleepUntilWindowed(ts, ts+userParam.getTicksBetweenMessages());
   }
+  chThdExit(0);
 }

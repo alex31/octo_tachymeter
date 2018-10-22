@@ -30,6 +30,7 @@ struct __attribute__((packed)) MotorParameters {
   uint32_t minRpm;
   uint32_t maxRpm;
   uint32_t motorNbMagnets;
+  uint32_t nbMotors;
   SensorType sensorType;
 };
 

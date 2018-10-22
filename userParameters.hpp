@@ -26,6 +26,9 @@ public:
 
   void setMotorNbMagnets(const uint32_t nbm) {motorNbMagnets=nbm;};
   uint32_t getMotorNbMagnets(void) const {return motorNbMagnets;};
+
+  void setNbMotors(const uint32_t nb) {nbMotors=nb;};
+  uint32_t getNbMotors(void) const {return nbMotors;};
   
 private:
   uint32_t ticksBetweenMessages = 1000;
@@ -33,6 +36,7 @@ private:
   uint32_t minRpm = INIT_MIN_RPM;
   uint32_t maxRpm = INIT_MAX_RPM;
   uint32_t motorNbMagnets = INIT_MOTOR_NB_MAGNETS;
+  uint32_t nbMotors = 0;
   SensorType sensorType = INIT_SENSOR_TYPE;
 
   RunningState runningState =  INIT_RUNNING_STATE;

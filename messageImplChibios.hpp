@@ -6,6 +6,7 @@
 #include "globalVar.h"
 #include "stdutil.h"
 #include "userParameters.hpp"
+#include "rpmMsg.hpp"
 
 void messageInit(const char* device = nullptr);
 
@@ -28,10 +29,9 @@ void  runOnRecept(void) const final {
   if (userParam.getRunningState() != data->runningState) {
     userParam.setRunningState(data->runningState);
     if (data->runningState == RunningState::Stop) {
-      // stop thread
+      rpmStopStreaming();
     } else if (data->runningState == RunningState::Run) {
-      // launch thread
-      // the launch method has to verify that thread is stopped
+      rpmStartStreaming();
     }
   }
 }
@@ -43,6 +43,7 @@ void  runOnRecept(void) const final {
     userParam.setMinRpm(data->minRpm);
     userParam.setMaxRpm(data->maxRpm);
     userParam.setMotorNbMagnets(data->motorNbMagnets);
+    userParam.setNbMotors(data->nbMotors);
     userParam.setSensorType(data->sensorType);
   }
 }

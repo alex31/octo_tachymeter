@@ -4,6 +4,7 @@
 
 
 void		rpmStartStreaming(void);
+void		rpmStopStreaming(void);
 uint16_t	rpmGetRPM(size_t index);
 size_t		rpmGetNumTrackedMotors(void);
 SensorType	rpmGetSensorType(void);
