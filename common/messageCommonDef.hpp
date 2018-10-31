@@ -1,36 +1,40 @@
 #pragma once
 #include "hardwareConf.hpp"
 
-
+// id 0
 struct __attribute__((packed)) Errors {
   using AType = uint8_t;
   static constexpr size_t ASize = 8;
-  uint32_t dynSize=0U;
+  uint8_t  dynSize=0U;
   
   std::array<AType, ASize> values;
 };
 
+// id 1
 struct __attribute__((packed)) Rpms {
   using AType = uint16_t;
   static constexpr size_t ASize = Errors::ASize;
-  uint32_t dynSize=0U;
+  uint8_t dynSize=0U;
   
   std::array<AType, ASize> values;
 };
 
+// id 2
 struct __attribute__((packed)) MessPerSecond {
   uint16_t value;
 };
 
+// id 3
 struct __attribute__((packed)) StartStopMeasure {
   RunningState runningState;
 };
 
+// id 4
 struct __attribute__((packed)) MotorParameters {
   uint32_t minRpm;
   uint32_t maxRpm;
-  uint32_t motorNbMagnets;
-  uint32_t nbMotors;
+  uint8_t motorNbMagnets;
+  uint8_t nbMotors;
   SensorType sensorType;
 };
 

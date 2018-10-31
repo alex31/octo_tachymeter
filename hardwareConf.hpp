@@ -1,8 +1,8 @@
 #pragma once
 #include <stdint.h>
 
-enum class SensorType {Hall_effect, Esc_coupler, No_Init};
-enum class RunningState {Stop, Run, Error};
+enum class SensorType : uint8_t {Hall_effect, Esc_coupler, No_Init};
+enum class RunningState : uint8_t {Stop, Run, Error};
 
 static constexpr uint32_t operator"" _pwmChannel (unsigned long long int channel)
 {
@@ -29,6 +29,7 @@ static constexpr uint32_t operator"" _percent (unsigned long long int freq)
 // USER EDITABLE CONSTANT
 static constexpr SensorType INIT_SENSOR_TYPE = SensorType::Hall_effect;
 static constexpr RunningState INIT_RUNNING_STATE = RunningState::Run;
+static constexpr uint32_t INIT_MESS_PER_SECOND = 10;
 
 static constexpr uint32_t INIT_MIN_RPM = 100UL;
 static constexpr uint32_t INIT_MAX_RPM = 30000UL;

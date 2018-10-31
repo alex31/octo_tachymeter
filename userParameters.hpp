@@ -31,7 +31,7 @@ public:
   uint32_t getNbMotors(void) const {return nbMotors;};
   
 private:
-  uint32_t ticksBetweenMessages = 1000;
+  uint32_t ticksBetweenMessages = CH_CFG_ST_FREQUENCY / INIT_MESS_PER_SECOND;
 
   uint32_t minRpm = INIT_MIN_RPM;
   uint32_t maxRpm = INIT_MAX_RPM;

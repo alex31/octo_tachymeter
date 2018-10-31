@@ -56,6 +56,13 @@ void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
   icuEnableNotifications(icup);
 }
 
+void PeriodSense::stopIcu(void)
+{
+  icuDisableNotifications(icup);
+  icuStopCapture(icup);
+  icuStop(icup);
+}
+
 icucnt_t	PeriodSense::getPeriodAverage(void) const
 {
   return (icup->hasOverflow) ? UINT_MAX : winAvg[icup->index].getMean();

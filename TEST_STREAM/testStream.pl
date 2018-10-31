@@ -150,10 +150,11 @@ sub serialCb()
     @sync = (0,0) unless @sync;
     for ($state) {
 	when  (WAIT_FOR_SYNC) {
+#	    say ("notsync");
 	    $sync[0] = $sync[1];
 	    sysread (FHD, $buffer, 1);
 	    $sync[1] = unpack ('C', $buffer);
-	    if (($sync[0] == 0xED) && ($sync[1] == 0xFE)) {
+	    if (($sync[0] == 0xFE) && ($sync[1] == 0xED)) {
 		$state = WAIT_FOR_LEN;
 	    } 
 	}
@@ -165,7 +166,7 @@ sub serialCb()
 	}
 	
 	when  (WAIT_FOR_PAYLOAD) {
-#	    say ("len is $len");
+	    say ("len is $len");
 	    $totLen = 0;
 	    do {
 		$totLen += sysread (FHD, $buffer, $len-$totLen, $totLen);
@@ -222,43 +223,31 @@ sub fletcher16 ($$)
  use Time::HiRes qw( clock_gettime clock_getres clock_nanosleep
                              ITIMER_REAL ITIMER_VIRTUAL ITIMER_PROF ITIMER_REALPROF );
 my @messagesId = ('rpm', 'error');
+
+
+# TACHY
+# payload : ID(1) DYNSIZE(1) RPM(2) x DYNSIZE
+#
+#
 sub tachyMessageCb ($)
 {
     my ($bufferRef) = @_;
  
-    state $cnt=0;
-
-    # COUNT CODE BEGIN
-    # state $ts = clock_gettime();
-    
-    # $cnt++;
-    # my $diff = clock_gettime() - $ts;
-
-    # if (($cnt % 1000) == 0) {
-    # 	printf ("%d mess/second\n", $cnt/$diff);
-    # 	$cnt=0;
-    # 	$ts = clock_gettime();
-    # }
-    # return;
-    # COUNT CODE END
-    
-    return	if (($cnt++ % 128) != 0) ;
-    
-    my $nbMotor = (length($$bufferRef)-1) / 2;
-    my ($id) = unpack('V', $$bufferRef);
-    
-    
+    my ($id) = unpack('C', $$bufferRef);
+    substr($$bufferRef, 0, 1, '');
     
     if ($id == 0) {
-    	my $format =  'V'. ('S' x $nbMotor);
+	my ($nb) = unpack('C', $$bufferRef);
+	substr($$bufferRef, 0, 1, '');
+	my $format =  'C' x $nb;
     	my @fields = unpack($format, $$bufferRef);
-    	unshift @fields;
-	printf ("RPMs = %s\n", join (':', @fields));
-    } elsif ($id == 1) {
-    	my $format =  'V'. ('C' x $nbMotor);
-    	my @fields = unpack($format, $$bufferRef);
-    	unshift @fields;
     	printf ("ERRs = %s\n", join (':', @fields));
+    } elsif ($id == 1) {
+	my ($nb) = unpack('C', $$bufferRef);
+	substr($$bufferRef, 0, 1, '');
+    	my $format =  'S' x $nb;
+    	my @fields = unpack($format, $$bufferRef);
+	printf ("RPMs = %s\n", join (':', @fields));
     }
 }
 
@@ -269,7 +258,7 @@ sub simpleMsgSend ($)
     my $bufferRef = shift;
     my $len = length $$bufferRef;
     my $crc = fletcher16 ($bufferRef, undef);
-    my @sync = (0xED, 0xFE);
+    my @sync = (0xFE, 0xED);
 
     my $msgHeader = pack ('C3', @sync, $len);
     my $msgTrailer = pack ('S', $crc);

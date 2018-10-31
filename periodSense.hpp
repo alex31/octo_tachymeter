@@ -30,6 +30,8 @@ class PeriodSense {
 public:
   PeriodSense(void) : icup(nullptr) {};
   void		setIcu(ICUDriver * const _icup, const icuchannel_t channel);
+  void		stopIcu(void);
+  static void	resetIcu(void) {indexer=0U;};
   icucnt_t	getPeriodAverage(void) const;
   uint32_t	getRPM(void) const ;
   uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean();};

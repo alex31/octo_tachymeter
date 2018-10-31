@@ -142,5 +142,10 @@ static void hallSensorStreamer (void *arg)
     }
     chThdSleepUntilWindowed(ts, ts+userParam.getTicksBetweenMessages());
   }
+  for (size_t i=0; i<userParam.getNbMotors(); i++) {
+    psa[i].stopIcu();
+  }
+  PeriodSense::resetIcu();
+
   chThdExit(0);
 }
