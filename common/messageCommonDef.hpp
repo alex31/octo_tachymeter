@@ -38,3 +38,10 @@ struct __attribute__((packed)) MotorParameters {
   SensorType sensorType;
 };
 
+// id 5
+struct __attribute__((packed)) TachoError {
+  TachoError(void) {error[0]=0;};
+  TachoError(const char* er) {strlcpy(error, er, sizeof(error));}
+  char error[48];
+};
+

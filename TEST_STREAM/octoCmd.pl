@@ -49,6 +49,8 @@ my @varDataIn = ({
     'errors' => 0
 		 });
 
+my $tachoErrMsg='';
+
 foreach my $i (1 .. 7) {
     %{$varDataIn[$i]} = %{$varDataIn[0]};
 }
@@ -146,6 +148,7 @@ sub generatePanel ()
     labelEntryFrame($specialOrderFrame, "Nb Magnets", \ ($varDataOut{'motorMagnets'}), 'top', 10); 
     labelEntryFrame($specialOrderFrame, "Mb Motors", \ ($varDataOut{'nbMotors'}), 'top', 10); 
     labelEntryFrame($specialOrderFrame, "Mb Mess / Sec", \ ($varDataOut{'nbMessPerSec'}), 'top', 10); 
+    labelLabelFrame($specialOrderFrame, "lastErr = ", \ ($tachoErrMsg), 'left', 48);
 
     my @pl = qw/-side left -expand 1 -padx .5c -pady .5c/;
     my $rbf  = $specialOrderFrame->LabFrame(-label => 'sensor')->pack(@pl);
@@ -401,8 +404,11 @@ sub octoMessageCB ($)
 	for (my $c=0; $c<$nb; $c++) {
 	    $varDataIn[$c]->{'rpm'} = sprintf ("%.0f", $fields[$c]); 
 	}
+    } elsif ($id == 5) {
+	$tachoErrMsg = unpack('Z*', $$bufferRef);
     }
 }
+
 
 
 sub simpleMsgSend ($)

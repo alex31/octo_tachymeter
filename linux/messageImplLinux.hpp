@@ -37,3 +37,10 @@ Derive_Msg(StartStopMeasure)
 // no runOnRecept impl since this message is only meant to be sent
 Derive_Msg(MotorParameters)
 };
+
+
+Derive_Msg(TachoError)
+void  runOnRecept(void) const final {
+  printf ("Error received : %s \n", data->error);
+}
+};

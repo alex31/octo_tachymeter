@@ -18,6 +18,10 @@ Derive_DynMsg(Errors)
 Derive_DynMsg(Rpms) 
 };
 
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(TachoError) 
+};
+
 Derive_Msg(MessPerSecond)
 void  runOnRecept(void) const final {
   userParam.setMessPerSecond(data->value);
@@ -52,7 +56,7 @@ void  runOnRecept(void) const final {
     userParam.setSensorType(data->sensorType);
     DebugTrace("runOnRecept MotorParameters");
   } else {
-    DebugTrace("cannot change MotorParameters while running");
+    FrameMsgSendObject<Msg_TachoError>::send(TachoError("ignoring MotorParameters when running"));
   }
 }
 };
