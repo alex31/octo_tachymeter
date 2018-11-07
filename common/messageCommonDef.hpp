@@ -45,3 +45,16 @@ struct __attribute__((packed)) TachoError {
   char error[48];
 };
 
+// id 6
+struct __attribute__((packed)) GetTachoStates {
+  uint8_t dummy=0;
+};
+
+// id 7
+struct __attribute__((packed)) TachoStates {
+  MotorParameters mp;
+  uint32_t widthOneRpm;
+  uint32_t timDivider;
+  uint32_t messPerSecond;
+  RunningState runningState;
+};

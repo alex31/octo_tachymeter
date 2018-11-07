@@ -22,6 +22,10 @@ Derive_DynMsg(Rpms)
 Derive_Msg(TachoError) 
 };
 
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(TachoStates) 
+};
+
 Derive_Msg(MessPerSecond)
 void  runOnRecept(void) const final {
   userParam.setMessPerSecond(data->value);
@@ -60,3 +64,25 @@ void  runOnRecept(void) const final {
   }
 }
 };
+
+
+Derive_Msg(GetTachoStates) 
+void  runOnRecept(void) const final {
+  const TachoStates ts = {
+    .mp = {
+      .minRpm = userParam.getMinRpm(),
+      .maxRpm = userParam.getMaxRpm(),
+      .motorNbMagnets =  static_cast<uint8_t>(userParam.getMotorNbMagnets()),
+      .nbMotors =  static_cast<uint8_t>(userParam.getNbMotors()),
+      .sensorType =  userParam.getSensorType()
+    },
+    .widthOneRpm = calcParam.getWidthOneRpm(),
+    .timDivider =  calcParam.getTimDivider(),
+    .messPerSecond = CH_CFG_ST_FREQUENCY / userParam.getTicksBetweenMessages(),
+    .runningState = userParam.getRunningState()
+  };
+  DebugTrace("runOnRecept GetTachoStates");
+  FrameMsgSendObject<Msg_TachoStates>::send(ts);
+}
+};
+

@@ -45,7 +45,9 @@ void rpmStartStreaming (void)
     return;
   }
   userParam.setRunningState(RunningState::Run);
-  calcParam.cache();
+  if (not calcParam.cache()) {
+    return;
+  }
   
   if (userParam.getSensorType() == SensorType::Esc_coupler) {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("ESC Opto Coupler sensing not yet implemented"));

@@ -12,6 +12,7 @@ use Modern::Perl '2015';
 use Tk;
 use Tk::ProgressBar;
 use Tk::LabFrame;
+use Tk::ROText;
 use Carp qw/longmess cluck confess/;
 use POSIX;
 
@@ -56,13 +57,16 @@ foreach my $i (1 .. 7) {
 }
 
 my %varDataOut = (
-    'rpmMin' => 100,		
-    'rpmMax' => 30000,
-    'motorMagnets' => 14,
-    'nbMotors' => 1,
-    'nbMessPerSec' => 10,
+    'rpmMin' => 0,		
+    'rpmMax' => 0,
+    'motorMagnets' => 0,
+    'nbMotors' => 0,
+    'nbMessPerSec' => 0,
     'sensorType' => 0,
+    'runState' => 0,
 );
+
+my $rotext;
 
 my $serialName = $ARGV[0] // "/dev/ttyACMx";
 #my $serialHandle;
@@ -86,8 +90,12 @@ my $dbgBuf;
 
 
 #$mw->fileevent(\*FHD, 'readable', \&serialCb) ;
-$mw->repeat (100, \&messagePollingCB);
-
+$mw->repeat(100, \&messagePollingCB);
+$mw->after(200, sub {
+    # demande l'état du tachymetre
+    my $buffer = pack ('cc', (6,0));
+    simpleMsgSend(\$buffer);
+});
 Tk::MainLoop;
 
 
@@ -128,19 +136,29 @@ sub generatePanel ()
     my @pk = (-side => 'top', -pady => '2m', -padx => '0m', 
 	      -anchor => 'w', -fill => 'both', -expand => 'true');
     
-    $specialOrderFrame->Button (-text => "Stop",
-				-command => sub {
-				    my $buffer = pack ('cc', (3, 0));
-				    simpleMsgSend(\$buffer);
-				}
+    $specialOrderFrame->Radiobutton (-text => "Stop",
+				     -variable => \ ($varDataOut{'runState'}),
+				     -value => 0,
+				     -command => sub {
+					 $tachoErrMsg='';
+					 my $buffer = pack ('cc', (3, 0));
+					 simpleMsgSend(\$buffer);
+					 $buffer = pack ('cc', (6,0));
+					 simpleMsgSend(\$buffer);
+				     }
 	)->pack(@pk);
     
-    $specialOrderFrame->Button (-text => "Run",
-				-command => sub {
-				    sendMotorParameters();
-				    my $buffer = pack ('cc', (3, 1));
-				    simpleMsgSend(\$buffer);
-				}
+    $specialOrderFrame->Radiobutton (-text => "Run",
+				     -variable => \ ($varDataOut{'runState'}),
+				     -value => 1,
+				     -command => sub {
+					 $tachoErrMsg='';
+					 sendMotorParameters();
+					 my $buffer = pack ('cc', (3, 1));
+					 simpleMsgSend(\$buffer);
+					 $buffer = pack ('cc', (6,0));
+					 simpleMsgSend(\$buffer);
+				     }
 	)->pack(@pk);
     
     labelEntryFrame($specialOrderFrame, "Rpm Min", \ ($varDataOut{'rpmMin'}), 'top', 10); 
@@ -165,6 +183,10 @@ sub generatePanel ()
 	-value    => 1,
         )->pack(@pl);
     
+    $rotext =  $specialOrderFrame->ROText(
+	-height => 2,
+	-width => 25,
+	)->pack(@pk);
     
 #  __    __   __   ____    _____   _____   ______   _____          
 # |  |/\|  | |  | |    \  /  ___\ |  ___| |_    _| /  ___>         
@@ -406,6 +428,21 @@ sub octoMessageCB ($)
 	}
     } elsif ($id == 5) {
 	$tachoErrMsg = unpack('Z*', $$bufferRef);
+    } elsif ($id == 7) {
+	my ($minRpm, $maxRpm, $motorNbMagnets, $nbMotors, $sensorType, 
+	    $widthOneRpm, $timDivider, $nbMessPerSec, $runningState) = 
+		unpack('VVCCCVVVC', $$bufferRef);
+	$varDataOut{rpmMin} = $minRpm;
+	$varDataOut{rpmMax} = $maxRpm;
+	$varDataOut{motorMagnets} = $motorNbMagnets;
+	$varDataOut{nbMotors} = $nbMotors;
+	$varDataOut{nbMessPerSec} = $nbMessPerSec;
+	$varDataOut{sensorType} = $sensorType;
+	$varDataOut{'runState'} = $runningState;
+	$varDataOut{'sensorType'} = $sensorType;
+	$rotext->delete('1.0', 'end');
+	$rotext->insert('1.0', "widthOneRpm = $widthOneRpm\n");
+	$rotext->insert('2.0', "timDivider = $timDivider\n");
     }
 }
 

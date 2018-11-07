@@ -10,7 +10,7 @@ static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
 class UserParam {
 public:
   void setMessPerSecond(uint32_t messPerSecond);
-  uint16_t getTicksBetweenMessages(void) const {return ticksBetweenMessages;};
+  uint32_t getTicksBetweenMessages(void) const {return ticksBetweenMessages;};
 
   void setSensorType(const SensorType st) {sensorType=st;};
   SensorType getSensorType(void) const {return sensorType;};
@@ -47,7 +47,7 @@ extern UserParam userParam;
 
 class CalculatedParam {
 public:
-  void cache(void);
+  bool	   cache(void);
   uint32_t getFreqAtMaxRpm(void) const {return freqAtMaxRpm;};
   uint32_t getFreqAtMinRpm(void) const {return freqAtMinRpm;};
   uint32_t getTickAtMinRpm(void) const {return tickAtMinRpm;};
