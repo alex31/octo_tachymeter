@@ -185,7 +185,7 @@ sub generatePanel ()
     
     $rotext =  $specialOrderFrame->ROText(
 	-height => 2,
-	-width => 25,
+	-width => 30,
 	)->pack(@pk);
     
 #  __    __   __   ____    _____   _____   ______   _____          
@@ -441,8 +441,11 @@ sub octoMessageCB ($)
 	$varDataOut{'runState'} = $runningState;
 	$varDataOut{'sensorType'} = $sensorType;
 	$rotext->delete('1.0', 'end');
-	$rotext->insert('1.0', "widthOneRpm = $widthOneRpm\n");
-	$rotext->insert('2.0', "timDivider = $timDivider\n");
+	$rotext->insert('1.0', "timDivider = $timDivider\n");
+	$rotext->insert('2.0', sprintf ("width rpmMin = %d\n", $widthOneRpm/$varDataOut{rpmMin}));
+	$rotext->insert('3.0', sprintf ("width rpmMax = %d\n", $widthOneRpm/$varDataOut{rpmMax}));
+	$rotext->insert('4.0', sprintf ("resolution rpmMax = %d bits\n", 
+					log($widthOneRpm/$varDataOut{rpmMax}) / log(2)));
     }
 }
 

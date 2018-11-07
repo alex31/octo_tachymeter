@@ -41,7 +41,7 @@ void rpmStartStreaming (void)
   //  numTrackedMotor = JUMPERS.readConf(0) + 1; // [1 .. 2^^3]
   //  sensorType = JUMPERS.readConf(1) ?  SensorType::Esc_coupler : SensorType::Hall_effect;
   if (streamerThd != nullptr) {
-    FrameMsgSendObject<Msg_TachoError>::send(TachoError("rpmStartStreaming error : streamerThd != null"));
+    FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: rpmStartStreaming error : streamerThd != null"));
     return;
   }
   userParam.setRunningState(RunningState::Run);
@@ -50,7 +50,7 @@ void rpmStartStreaming (void)
   }
   
   if (userParam.getSensorType() == SensorType::Esc_coupler) {
-    FrameMsgSendObject<Msg_TachoError>::send(TachoError("ESC Opto Coupler sensing not yet implemented"));
+    FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: ESC Opto Coupler sensing not yet implemented"));
     DebugTrace ("ESC Opto Coupler sensing not yet implemented");
   } else {
     streamerThd = chThdCreateStatic(waStreamer, sizeof(waStreamer),

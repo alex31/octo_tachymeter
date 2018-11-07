@@ -60,7 +60,7 @@ void  runOnRecept(void) const final {
     userParam.setSensorType(data->sensorType);
     DebugTrace("runOnRecept MotorParameters");
   } else {
-    FrameMsgSendObject<Msg_TachoError>::send(TachoError("ignoring MotorParameters when running"));
+    FrameMsgSendObject<Msg_TachoError>::send(TachoError("warn: ignoring MotorParameters when running"));
   }
 }
 };
