@@ -19,13 +19,17 @@
 // declaration des prototypes de fonction
 // ces declarations sont necessaires pour remplir le tableau commands[] ci-dessous
 static void cmd_mem(BaseSequentialStream *lchp, int argc,const char* const argv[]);
+#if CH_DBG_THREADS_PROFILING
 static void cmd_threads(BaseSequentialStream *lchp, int argc,const char* const argv[]);
+#endif
 static void cmd_uid(BaseSequentialStream *lchp, int argc,const char* const argv[]);
 static void cmd_param(BaseSequentialStream *lchp, int argc,const char* const argv[]);
 
 static const ShellCommand commands[] = {
   {"mem", cmd_mem},		// affiche la mémoire libre/occupée
+#if CH_DBG_THREADS_PROFILING
   {"threads", cmd_threads},	// affiche pour chaque thread le taux d'utilisation de la pile et du CPU
+#endif
   {"uid", cmd_uid},		// affiche le numéri d'identification unique du MCU
   {"param", cmd_param},		// fonction à but pedagogique qui affiche les
 				//   paramètres qui lui sont passés
@@ -94,8 +98,10 @@ typedef struct _ThreadCpuInfo {
   float    totalTicks;
 } ThreadCpuInfo ;
 
+#if CH_DBG_THREADS_PROFILING
 static void stampThreadCpuInfo (ThreadCpuInfo *ti);
 static float stampThreadGetCpuPercent (const ThreadCpuInfo *ti, const uint32_t idx);
+#endif
 
 static void cmd_uid(BaseSequentialStream *lchp, int argc,const char* const argv[]) {
   (void)argv;
@@ -133,7 +139,7 @@ static void cmd_mem(BaseSequentialStream *lchp, int argc,const char* const argv[
 
 
 
-
+#if CH_DBG_THREADS_PROFILING
 static void cmd_threads(BaseSequentialStream *lchp, int argc,const char* const argv[]) {
   static const char *states[] = {THD_STATE_NAMES};
   Thread *tp = chRegFirstThread();
@@ -171,7 +177,7 @@ static void cmd_threads(BaseSequentialStream *lchp, int argc,const char* const a
   const float cpuPercent = 100.f - idlePercent;
   chprintf (lchp, "\r\ncpu load = %.2f%%\r\n", cpuPercent);
 }
-
+#endif
 
 static const ShellConfig shell_cfg1 = {
 #if CONSOLE_DEV_USB == 0
@@ -255,6 +261,7 @@ void consoleLaunch (void)
 
 }
 
+#if CH_DBG_THREADS_PROFILING
 static void stampThreadCpuInfo (ThreadCpuInfo *ti)
 {
   const Thread *tp =  chRegFirstThread();
@@ -289,3 +296,5 @@ static float stampThreadGetCpuPercent (const ThreadCpuInfo *ti, const uint32_t i
 
   return ti->cpu[idx];
 }
+
+#endif

@@ -38,8 +38,6 @@ static void hallSensorStreamer (void *arg);
 
 void rpmStartStreaming (void)
 {
-  //  numTrackedMotor = JUMPERS.readConf(0) + 1; // [1 .. 2^^3]
-  //  sensorType = JUMPERS.readConf(1) ?  SensorType::Esc_coupler : SensorType::Hall_effect;
   if (streamerThd != nullptr) {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: rpmStartStreaming error : streamerThd != null"));
     return;

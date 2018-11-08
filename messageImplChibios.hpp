@@ -5,8 +5,10 @@
 #include <hal.h>
 #include "globalVar.h"
 #include "stdutil.h"
+#include "cpp_heap_alloc.hpp"
 #include "userParameters.hpp"
 #include "rpmMsg.hpp"
+
 
 void messageInit(const char* device = nullptr);
 
@@ -28,7 +30,14 @@ Derive_Msg(TachoStates)
 
 Derive_Msg(MessPerSecond)
 void  runOnRecept(void) const final {
+  auto oldTick = userParam.getTicksBetweenMessages();
   userParam.setMessPerSecond(data->value);
+  if (oldTick != userParam.getTicksBetweenMessages()) {
+    userParam.storeConfToEEprom();
+    DebugTrace("store new conf to eeprom");
+  } else {
+    DebugTrace("param have not changed");
+  }
   DebugTrace("runOnRecept MessPerSecond");
 }
 };
@@ -53,12 +62,19 @@ void  runOnRecept(void) const final {
 Derive_Msg(MotorParameters)
 void  runOnRecept(void) const final {
   if (userParam.getRunningState() ==  RunningState::Stop) {
+    const  UserParam beforeSet = userParam;
     userParam.setMinRpm(data->minRpm);
     userParam.setMaxRpm(data->maxRpm);
     userParam.setMotorNbMagnets(data->motorNbMagnets);
     userParam.setNbMotors(data->nbMotors);
     userParam.setSensorType(data->sensorType);
     DebugTrace("runOnRecept MotorParameters");
+    if (userParam != beforeSet) {
+      DebugTrace("store new conf to eeprom");
+      userParam.storeConfToEEprom();
+    } else {
+      DebugTrace("param have not changed");
+    }
   } else {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("warn: ignoring MotorParameters when running"));
   }

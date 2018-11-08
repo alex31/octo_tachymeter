@@ -1,6 +1,7 @@
 #include "userParameters.hpp"
 #include <cmath>
 #include "messageImplChibios.hpp"
+#include "eeprom.h"
 
 UserParam userParam;
 CalculatedParam calcParam;
@@ -12,6 +13,52 @@ void UserParam::setMessPerSecond(uint32_t messPerSecond)
   } else {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid MessPerSecond value"));
   }
+}
+
+
+bool UserParam::storeConfToEEprom(void)
+{
+  const ErrorCond st1 = eepromStore(TACHY_PARAMS, this, sizeof(*this));
+  switch (st1) {
+  case PROG_OK:
+    DebugTrace("DBG> eeprom store ok");
+    break;
+  case SECTOR_FULL_ERR:
+    DebugTrace("DBG> eeprom store full, wipe and store");
+    if (eepromWipe() != PROG_OK) {
+      FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom wipe"));
+      return false;
+    } else {
+      if (eepromStore(TACHY_PARAMS, this, sizeof(*this))  != PROG_OK) {
+	FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom store after wipe"));
+	return false;
+      }
+    }
+    break;
+  default:
+    FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom store"));
+    return false;
+  };
+
+  return true;
+}
+
+bool UserParam::readConfFromEEprom(void)
+{
+  const ErrorCond st1 = eepromLoad(TACHY_PARAMS, this, sizeof(*this));
+  if (st1 > PROG_OK) {
+    // first time, should init eeprom
+    if (eepromWipe() != PROG_OK) {
+      FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom wipe"));
+      return false;
+    }
+
+    if (eepromStore(TACHY_PARAMS, this, sizeof(*this)) != PROG_OK) {
+      FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: initial eeprom store"));
+    }
+  }
+
+  return true;
 }
 
 

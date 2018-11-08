@@ -5,6 +5,15 @@
 
 # Compiler options here.
 # -Wdouble-promotion -fno-omit-frame-pointer
+
+DEBUG := 1
+OPT_SPEED := 2
+OPT_SIZE := 3
+
+EXECMODE := $(DEBUG)
+#EXECMODE := $(OPT_SPEED)
+#EXECMODE := $(OPT_SIZE)
+
 GCCVERSIONGTEQ7 := $(shell expr `arm-none-eabi-gcc -dumpversion | cut -f1 -d.` \>= 7)
 GCC_DIAG =  -Werror -Wno-error=unused-variable -Wno-error=format \
             -Wno-error=cpp \
@@ -20,15 +29,23 @@ ifeq "$(GCCVERSIONGTEQ7)" "1"
 endif
 
 
-ifeq ($(USE_OPT),)
+
+ifeq ($(EXECMODE),$(DEBUG)) 
   USE_OPT =  -O0  -ggdb3  -Wall -Wextra \
 	    -falign-functions=16 -fomit-frame-pointer \
 	    $(GCC_DIAG)
 endif
 
-ifeq ($(USE_OPT),)
-  USE_OPT =  -Os  -flto  -Wall -Wextra \
+ifeq ($(EXECMODE),$(OPT_SPEED)) 
+    USE_OPT =  -Ofast -flto  -Wall -Wextra \
 	    -falign-functions=16 -fomit-frame-pointer \
+	     $(GCC_DIAG)
+endif
+
+ifeq ($(EXECMODE),$(OPT_SIZE)) 
+    USE_OPT =  -Os  -flto  -Wall -Wextra \
+	    -falign-functions=16 -fomit-frame-pointer \
+            --specs=nano.specs \
 	     $(GCC_DIAG)
 endif
 
@@ -148,6 +165,8 @@ CSRC = $(STARTUPSRC) \
        $(VARIOUS)/printf.c \
        $(VARIOUS)/microrl/microrlShell.c \
        $(VARIOUS)/microrl/microrl.c \
+       $(VARIOUS)/eeprom.c \
+       $(STMSRC)/stm32f4xx_flash.c \
        ttyConsole.c \
        globalVar.c \
        potentiometre.c \
@@ -188,7 +207,7 @@ ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = $(CHIBIOS)/os/license $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(TESTINC) \
-         $(CHIBIOS)/os/various $(VARIOUS) $(VARIOUS_INCL) \
+         $(CHIBIOS)/os/various $(VARIOUS) $(VARIOUS_INCL) $(STMSRC) \
 	 ./common
 
 #
@@ -238,7 +257,11 @@ CPPWARN = -Wall -Wextra -Wundef
 #
 
 # List all user C define here, like -D_DEBUG=1
-UDEFS = -DTRACE
+ifeq ($(EXECMODE),$(DEBUG))
+UDEFS = -DTRACE -DCHDEBUG_ENABLE=1
+else
+UDEFS = -DCHDEBUG_ENABLE=0
+endif
 
 # Define ASM defines here
 UADEFS =

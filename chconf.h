@@ -392,7 +392,12 @@
  *
  * @note    The default is @p FALSE.
  */
+
+#if CHDEBUG_ENABLE
 #define CH_DBG_STATISTICS                   TRUE
+#else
+#define CH_DBG_STATISTICS                   FALSE
+#endif
 
 /**
  * @brief   Debug option, system state check.
@@ -401,7 +406,12 @@
  *
  * @note    The default is @p FALSE.
  */
+#if CHDEBUG_ENABLE
 #define CH_DBG_SYSTEM_STATE_CHECK           TRUE
+#else
+#define CH_DBG_SYSTEM_STATE_CHECK           FALSE
+#endif
+
 
 /**
  * @brief   Debug option, parameters checks.
@@ -410,7 +420,11 @@
  *
  * @note    The default is @p FALSE.
  */
+#if CHDEBUG_ENABLE
 #define CH_DBG_ENABLE_CHECKS                TRUE
+#else
+#define CH_DBG_ENABLE_CHECKS                FALSE
+#endif
 
 /**
  * @brief   Debug option, consistency checks.
@@ -420,7 +434,11 @@
  *
  * @note    The default is @p FALSE.
  */
+#if CHDEBUG_ENABLE
 #define CH_DBG_ENABLE_ASSERTS               TRUE
+#else
+#define CH_DBG_ENABLE_ASSERTS               FALSE
+#endif
 
 /**
  * @brief   Debug option, trace buffer.
@@ -447,7 +465,12 @@
  * @note    The default failure mode is to halt the system with the global
  *          @p panic_msg variable set to @p NULL.
  */
+#if CHDEBUG_ENABLE
 #define CH_DBG_ENABLE_STACK_CHECK           TRUE
+#else
+#define CH_DBG_ENABLE_STACK_CHECK           FALSE
+#endif
+
 
 /**
  * @brief   Debug option, stacks initialization.
@@ -457,7 +480,11 @@
  *
  * @note    The default is @p FALSE.
  */
+#if CHDEBUG_ENABLE
 #define CH_DBG_FILL_THREADS                 TRUE
+#else
+#define CH_DBG_FILL_THREADS                 FALSE
+#endif
 
 /**
  * @brief   Debug option, threads profiling.
@@ -468,7 +495,11 @@
  * @note    This debug option is not currently compatible with the
  *          tickless mode.
  */
+#if CHDEBUG_ENABLE
 #define CH_DBG_THREADS_PROFILING            TRUE
+#else
+#define CH_DBG_THREADS_PROFILING            FALSE
+#endif
 
 /** @} */
 

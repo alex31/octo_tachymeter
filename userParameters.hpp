@@ -3,12 +3,16 @@
 
 #include <ch.h>
 #include <hal.h>
+#include <cstring>
 
 static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
 
 
 class UserParam {
 public:
+  bool operator ==(const UserParam& up) {return (memcmp(this, &up, sizeof(up)) == 0);};
+  bool operator !=(const UserParam& up) {return not (*this == up);};
+  
   void setMessPerSecond(uint32_t messPerSecond);
   uint32_t getTicksBetweenMessages(void) const {return ticksBetweenMessages;};
 
@@ -29,6 +33,10 @@ public:
 
   void setNbMotors(const uint32_t nb) {nbMotors=nb;};
   uint32_t getNbMotors(void) const {return nbMotors;};
+
+  bool readConfFromEEprom(void);
+  bool storeConfToEEprom(void);
+  
   
 private:
   uint32_t ticksBetweenMessages = CH_CFG_ST_FREQUENCY / INIT_MESS_PER_SECOND;
@@ -36,7 +44,7 @@ private:
   uint32_t minRpm = INIT_MIN_RPM;
   uint32_t maxRpm = INIT_MAX_RPM;
   uint32_t motorNbMagnets = INIT_MOTOR_NB_MAGNETS;
-  uint32_t nbMotors = 0;
+  uint32_t nbMotors = INIT_MOTOR_NB_MOTORS;
   SensorType sensorType = INIT_SENSOR_TYPE;
 
   RunningState runningState =  INIT_RUNNING_STATE;

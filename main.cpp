@@ -10,7 +10,6 @@
 #include "pwm.h"
 #include "rpmMsg.hpp"
 #include "userParameters.hpp"
-#include "jumperConf.hpp"
 #include "messageImplChibios.hpp"
 
 /*
@@ -110,9 +109,8 @@ int main(void)
 #endif
 
   messageInit();
-  userParam.setNbMotors(JUMPERS.readConf(0) + 1);
-  userParam.setSensorType(JUMPERS.readConf(1) ?
-			  SensorType::Esc_coupler : SensorType::Hall_effect);
+  userParam.readConfFromEEprom();
+
   if (INIT_RUNNING_STATE == RunningState::Run) {
     rpmStartStreaming();
   } else {
