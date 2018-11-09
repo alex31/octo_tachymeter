@@ -28,10 +28,11 @@ using ErrorWin =    WindowAverage<uint8_t, 64>;
 
 class PeriodSense {
 public:
-  PeriodSense(void) : icup(nullptr) {};
+  PeriodSense() : icup(nullptr) {};
   void		setIcu(ICUDriver * const _icup, const icuchannel_t channel);
   void		stopIcu(void);
   static void	resetIcu(void) {indexer=0U;};
+  static size_t	getDynSize(void) {return indexer;};
   icucnt_t	getPeriodAverage(void) const;
   uint32_t	getRPM(void) const ;
   uint32_t	getMperiod(void) const {return winAvg[icup->index].getMean();};
@@ -40,10 +41,11 @@ public:
   uint32_t	getRWidth(void) const {return icuGetWidthX(icup);};
   uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
   size_t	getIndex(void) const {return icup->index;}
-  size_t	getDynSize(void) {return indexer;};
   
 private:
   void setDivider (const uint16_t divider);
+  void setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_t channel);
+  void setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuchannel_t channel);
 
 
   ICUDriver *		icup;

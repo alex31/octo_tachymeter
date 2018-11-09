@@ -5,8 +5,6 @@
 #include <hal.h>
 #include <cstring>
 
-static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
-
 
 class UserParam {
 public:

@@ -25,6 +25,18 @@ Derive_DynMsg(Rpms)
 };
 
 
+Derive_Msg(TachoStates) 
+};
+
+Derive_Msg(TachoError)
+void  runOnRecept(void) const final {
+  printf ("Error received : %s \n", data->error);
+}
+};
+
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(GetTachoStates)
+};
 
 // no runOnRecept impl since this message is only meant to be sent
 Derive_Msg(MessPerSecond)
@@ -39,8 +51,3 @@ Derive_Msg(MotorParameters)
 };
 
 
-Derive_Msg(TachoError)
-void  runOnRecept(void) const final {
-  printf ("Error received : %s \n", data->error);
-}
-};

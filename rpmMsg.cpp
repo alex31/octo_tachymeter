@@ -34,7 +34,7 @@ static_assert(Rpms::ASize >= ICU_NUMBER_OF_ENTRIES,
 	      "Errors/Rpms array size should be >= ICU_NUMBER_OF_ENTRIES");
 
 static THD_WORKING_AREA(waStreamer, 1024);
-static void hallSensorStreamer (void *arg);
+static void sensorStreamer (void *arg);
 
 void rpmStartStreaming (void)
 {
@@ -47,13 +47,9 @@ void rpmStartStreaming (void)
     return;
   }
   
-  if (userParam.getSensorType() == SensorType::Esc_coupler) {
-    FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: ESC Opto Coupler sensing not yet implemented"));
-    DebugTrace ("ESC Opto Coupler sensing not yet implemented");
-  } else {
-    streamerThd = chThdCreateStatic(waStreamer, sizeof(waStreamer),
-				    NORMALPRIO, &hallSensorStreamer, NULL);
-  }
+  streamerThd = chThdCreateStatic(waStreamer, sizeof(waStreamer),
+				  NORMALPRIO, &sensorStreamer, NULL);
+  
 }
 
 void rpmStopStreaming (void)
@@ -105,11 +101,11 @@ static void copyValToMsg(T& msg_s, const std::array<F, FN>& arr,
 }
 
 
-static void hallSensorStreamer (void *arg)
+static void sensorStreamer (void *arg)
 {
   (void) arg;
   
-  chRegSetThreadName("hallSensorStreamer");
+  chRegSetThreadName("sensorStreamer");
   calcParam.cache();
 
   Errors errors;

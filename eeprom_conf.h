@@ -18,5 +18,5 @@
 #define ADDR_FLASH_SECTOR_10    (0x080C0000) /* Base @ of Sector 10, 128 Kbytes */
 #define ADDR_FLASH_SECTOR_11    (0x080E0000) /* Base @ of Sector 11, 128 Kbytes */
 
-typedef enum  {TACHY_PARAMS=0,
+typedef enum  {TACHO_PARAMS=0,
 	       EEPROM_STRUCT_LAST_ITEM} EepromStructType;

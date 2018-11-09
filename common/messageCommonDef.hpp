@@ -1,6 +1,10 @@
 #pragma once
 #include "hardwareConf.hpp"
 
+#ifdef __gnu_linux__
+#include <bsd/string.h>
+#endif
+
 // id 0
 struct __attribute__((packed)) Errors {
   using AType = uint8_t;

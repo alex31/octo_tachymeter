@@ -13,22 +13,22 @@
 void messageInit(const char* device = nullptr);
 
 // no runOnRecept impl since this message is only meant to be sent
-Derive_DynMsg(Errors) 
+Derive_DynMsg(Errors) //{
 };
 
 // no runOnRecept impl since this message is only meant to be sent
-Derive_DynMsg(Rpms) 
+Derive_DynMsg(Rpms) //{
 };
 
 // no runOnRecept impl since this message is only meant to be sent
-Derive_Msg(TachoError) 
+Derive_Msg(TachoError) //{
 };
 
 // no runOnRecept impl since this message is only meant to be sent
-Derive_Msg(TachoStates) 
+Derive_Msg(TachoStates) //{
 };
 
-Derive_Msg(MessPerSecond)
+Derive_Msg(MessPerSecond) //{
 void  runOnRecept(void) const final {
   auto oldTick = userParam.getTicksBetweenMessages();
   userParam.setMessPerSecond(data->value);
@@ -42,7 +42,7 @@ void  runOnRecept(void) const final {
 }
 };
 
-Derive_Msg(StartStopMeasure)
+Derive_Msg(StartStopMeasure) //{
 void  runOnRecept(void) const final {
   if (userParam.getRunningState() != data->runningState) {
     userParam.setRunningState(data->runningState);
@@ -59,7 +59,7 @@ void  runOnRecept(void) const final {
 }
 };
 
-Derive_Msg(MotorParameters)
+Derive_Msg(MotorParameters) //{
 void  runOnRecept(void) const final {
   if (userParam.getRunningState() ==  RunningState::Stop) {
     const  UserParam beforeSet = userParam;
@@ -82,7 +82,7 @@ void  runOnRecept(void) const final {
 };
 
 
-Derive_Msg(GetTachoStates) 
+Derive_Msg(GetTachoStates) //{
 void  runOnRecept(void) const final {
   const TachoStates ts = {
     .mp = {

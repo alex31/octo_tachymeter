@@ -18,7 +18,7 @@ void UserParam::setMessPerSecond(uint32_t messPerSecond)
 
 bool UserParam::storeConfToEEprom(void)
 {
-  const ErrorCond st1 = eepromStore(TACHY_PARAMS, this, sizeof(*this));
+  const ErrorCond st1 = eepromStore(TACHO_PARAMS, this, sizeof(*this));
   switch (st1) {
   case PROG_OK:
     DebugTrace("DBG> eeprom store ok");
@@ -29,7 +29,7 @@ bool UserParam::storeConfToEEprom(void)
       FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom wipe"));
       return false;
     } else {
-      if (eepromStore(TACHY_PARAMS, this, sizeof(*this))  != PROG_OK) {
+      if (eepromStore(TACHO_PARAMS, this, sizeof(*this))  != PROG_OK) {
 	FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom store after wipe"));
 	return false;
       }
@@ -45,7 +45,7 @@ bool UserParam::storeConfToEEprom(void)
 
 bool UserParam::readConfFromEEprom(void)
 {
-  const ErrorCond st1 = eepromLoad(TACHY_PARAMS, this, sizeof(*this));
+  const ErrorCond st1 = eepromLoad(TACHO_PARAMS, this, sizeof(*this));
   if (st1 > PROG_OK) {
     // first time, should init eeprom
     if (eepromWipe() != PROG_OK) {
@@ -53,7 +53,7 @@ bool UserParam::readConfFromEEprom(void)
       return false;
     }
 
-    if (eepromStore(TACHY_PARAMS, this, sizeof(*this)) != PROG_OK) {
+    if (eepromStore(TACHO_PARAMS, this, sizeof(*this)) != PROG_OK) {
       FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: initial eeprom store"));
     }
   }
