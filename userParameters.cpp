@@ -97,8 +97,12 @@ bool CalculatedParam::cache(void)
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid nbTicksAtMaxRpm value"));
     return false;
   }
-  
-  widthOneRpm =  TIMER_FREQ_IN  * 60ULL / timDivider / up.getMotorNbMagnets();
+
+  if (userParam.getSensorType() == SensorType::Hall_effect) {
+    widthOneRpm =  TIMER_FREQ_IN  * 60ULL / timDivider / up.getMotorNbMagnets();
+  } else {
+    widthOneRpm =  TIMER_FREQ_OPTO  * 60ULL / up.getMotorNbMagnets();
+  }
 
   const uint32_t bitResolution = logf(widthOneRpm/up.getMaxRpm()) / logf(2);
   if (bitResolution < 3) {

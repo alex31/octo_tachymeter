@@ -102,7 +102,6 @@ int main(void)
    * - Kernel initialization, the main() function becomes a thread and the
    *   RTOS is active.
    */
-
 #ifdef TRACE
   consoleInit();
   consoleLaunch();
@@ -111,11 +110,10 @@ int main(void)
   messageInit();
   userParam.readConfFromEEprom();
 
-  if (INIT_RUNNING_STATE == RunningState::Run) {
+  if (userParam.getRunningState() == RunningState::Run) {
     rpmStartStreaming();
-  } else {
-    userParam.setRunningState(RunningState::Stop);
-  }
+  } 
+
   
 #ifdef TRACE
   chThdCreateStatic(waBlinker, sizeof(waBlinker), NORMALPRIO, &blinker, NULL);

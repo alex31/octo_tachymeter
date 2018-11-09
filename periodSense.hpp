@@ -52,5 +52,6 @@ private:
   ICUConfig		config;
   static CountWinAvg	winAvg[ICU_NUMBER_OF_ENTRIES];
   static ErrorWin	winErr[ICU_NUMBER_OF_ENTRIES];
+  static uint32_t	optoTimeStamp[ICU_NUMBER_OF_ENTRIES];
   static size_t		indexer;
 };
