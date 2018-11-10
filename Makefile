@@ -264,7 +264,12 @@ UDEFS = -DCHDEBUG_ENABLE=0
 endif
 
 # Define ASM defines here
-UADEFS =
+ifeq ($(EXECMODE),$(DEBUG))
+UADEFS =-DCHDEBUG_ENABLE=1
+else
+UADEFS =-DCHDEBUG_ENABLE=0
+endif
+
 
 # List all user directories here
 UINCDIR =
