@@ -76,6 +76,15 @@ bool CalculatedParam::cache(void)
     return false;
   }
 
+#ifdef DEBUG
+  if (up.getInterleavedSensor() == true) {
+    if ((up.getNbMotors() %2)) {
+      FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid odd NbMotors (interleaved)"));
+      return false;
+    }
+  }
+#endif
+  
   if ((up.getMinRpm() < 10) or (up.getMinRpm() > 10000)) {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid MinRpm value"));
     return false;
@@ -93,18 +102,15 @@ bool CalculatedParam::cache(void)
   }
   
   nbTicksAtMaxRpm =  powf(2.0f, TIMER_WIDTH_BITS) * up.getMinRpm() / up.getMaxRpm();
-  if (nbTicksAtMaxRpm > 65535) {
+  if (nbTicksAtMaxRpm >= 65535) {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid nbTicksAtMaxRpm value"));
     return false;
   }
 
-  if (userParam.getSensorType() == SensorType::Hall_effect) {
-    widthOneRpm =  TIMER_FREQ_IN  * 60ULL / timDivider / up.getMotorNbMagnets();
-  } else {
-    widthOneRpm =  TIMER_FREQ_OPTO  * 60ULL / up.getMotorNbMagnets();
-  }
+  widthOneRpmHall =  TIMER_FREQ_IN  * 60ULL / timDivider / up.getMotorNbMagnets();
+  widthOneRpmOpto =  TIMER_FREQ_OPTO  * 60ULL / up.getMotorNbMagnets();
 
-  const uint32_t bitResolution = logf(widthOneRpm/up.getMaxRpm()) / logf(2);
+  const uint32_t bitResolution = logf(widthOneRpmHall/up.getMaxRpm()) / logf(2);
   if (bitResolution < 3) {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: low resolution < 3 bits @maxSpeed"));
     return false;

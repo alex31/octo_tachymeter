@@ -41,6 +41,8 @@ public:
   uint32_t	getRWidth(void) const {return icuGetWidthX(icup);};
   uint32_t	getTimPsc(void) const {return icup->tim->PSC;};
   size_t	getIndex(void) const {return icup->index;}
+  void		setWidthOneRpm(const uint32_t w) {widthOneRpm=w;};
+  uint32_t	getWidthOneRpm(void) const {return widthOneRpm;};
   
 private:
   void setDivider (const uint16_t divider);
@@ -50,8 +52,11 @@ private:
 
   ICUDriver *		icup;
   ICUConfig		config;
+  uint32_t		widthOneRpm;
+
   static CountWinAvg	winAvg[ICU_NUMBER_OF_ENTRIES];
   static ErrorWin	winErr[ICU_NUMBER_OF_ENTRIES];
   static uint32_t	optoTimeStamp[ICU_NUMBER_OF_ENTRIES];
   static size_t		indexer;
+  
 };

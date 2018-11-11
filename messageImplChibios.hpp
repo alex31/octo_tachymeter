@@ -66,7 +66,12 @@ void  runOnRecept(void) const final {
     userParam.setMinRpm(data->minRpm);
     userParam.setMaxRpm(data->maxRpm);
     userParam.setMotorNbMagnets(data->motorNbMagnets);
+#ifdef DEBUG
+    userParam.setNbMotors(data->nbMotors % 10);
+    userParam.setInterleavedSensor(data->nbMotors > 10);
+#else
     userParam.setNbMotors(data->nbMotors);
+#endif
     userParam.setSensorType(data->sensorType);
     DebugTrace("runOnRecept MotorParameters");
     if (userParam != beforeSet) {
@@ -92,7 +97,7 @@ void  runOnRecept(void) const final {
       .nbMotors =  static_cast<uint8_t>(userParam.getNbMotors()),
       .sensorType =  userParam.getSensorType()
     },
-    .widthOneRpm = calcParam.getWidthOneRpm(),
+    .widthOneRpm = calcParam.getWidthOneRpmOpto(),
     .timDivider =  calcParam.getTimDivider(),
     .messPerSecond = CH_CFG_ST_FREQUENCY / userParam.getTicksBetweenMessages(),
     .runningState = userParam.getRunningState()

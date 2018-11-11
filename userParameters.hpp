@@ -32,6 +32,11 @@ public:
   void setNbMotors(const uint32_t nb) {nbMotors=nb;};
   uint32_t getNbMotors(void) const {return nbMotors;};
 
+#ifdef DEBUG
+  void setInterleavedSensor(const bool is) {interleavedSensor=is;};
+  uint32_t getNbMotors(void) const {return interleavedSensor;};
+#endif
+  
   bool readConfFromEEprom(void);
   bool storeConfToEEprom(void);
   
@@ -46,6 +51,9 @@ private:
   SensorType sensorType = INIT_SENSOR_TYPE;
 
   RunningState runningState =  INIT_RUNNING_STATE;
+#ifdef DEBUG
+  bool	       interleavedSensor = false;
+#endif
 };
 
 extern UserParam userParam;
@@ -59,7 +67,8 @@ public:
   uint32_t getTickAtMinRpm(void) const {return tickAtMinRpm;};
   uint32_t getTimDivider(void) const {return timDivider;};
   uint32_t getNbTicksAtMaxRpm(void) const {return nbTicksAtMaxRpm;};
-  uint32_t getWidthOneRpm(void) const {return widthOneRpm;};
+  uint32_t getWidthOneRpmHall(void) const {return widthOneRpmHall;};
+  uint32_t getWidthOneRpmOpto(void) const {return widthOneRpmOpto;};
 
 private:
   uint32_t freqAtMaxRpm;
@@ -67,7 +76,8 @@ private:
   uint32_t tickAtMinRpm;
   uint32_t timDivider;
   uint32_t nbTicksAtMaxRpm;
-  uint32_t widthOneRpm;
+  uint32_t widthOneRpmHall;
+  uint32_t widthOneRpmOpto;
 };
 
 extern CalculatedParam calcParam;

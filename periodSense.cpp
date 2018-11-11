@@ -53,6 +53,16 @@ void PeriodSense::setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_
 		 "TIMER_FREQ_IN not compatible with timer source clock");
 
   setDivider(calcParam.getTimDivider());
+#ifdef DEBUG
+  if (userParam.getInterleavedSensor() == true) {
+    setWidthOneRpm((icup->index % 2) ? calcParam.getWidthOneRpmHall() :
+		   calcParam.getWidthOneRpmHall());
+  } else {
+    setWidthOneRpm(calcParam.getWidthOneRpmHall());
+  }
+#else
+  setWidthOneRpm(calcParam.getWidthOneRpmHall());  
+#endif
   icuStartCapture(icup);
   icuEnableNotifications(icup);
 }
@@ -97,7 +107,7 @@ void PeriodSense::setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuc
     .channel = channel,
     .dier = 0
   };
-
+  setWidthOneRpm(calcParam.getWidthOneRpmOpto());
   icup->hasOverflow = false;
 
   icuStart(icup, &config);
@@ -149,7 +159,7 @@ void	PeriodSense::setDivider(const uint16_t divider)
 
 uint32_t	PeriodSense::getRPM(void) const
 {
-  return  calcParam.getWidthOneRpm() / getPeriodAverage();
+  return  getWidthOneRpm() / getPeriodAverage();
 }
 
 
