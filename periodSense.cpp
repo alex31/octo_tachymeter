@@ -31,14 +31,14 @@ void PeriodSense::setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_
       }
       licup->hasOverflow = false;
 #ifdef TRACE
-      palClearLine(LINE_LED1);
+      //      palClearLine(LINE_LED1);
 #endif
     } ,
     .overflow_cb =  [] (ICUDriver *licup) {
       winErr[licup->index].push(1);
       licup->hasOverflow = true;
 #ifdef TRACE
-      palSetLine(LINE_LED1); 	
+      //      palSetLine(LINE_LED1); 	
 #endif
     },
     .channel = channel,
@@ -53,16 +53,7 @@ void PeriodSense::setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_
 		 "TIMER_FREQ_IN not compatible with timer source clock");
 
   setDivider(calcParam.getTimDivider());
-#ifdef TRACE
-  if (userParam.getInterleavedSensor() == true) {
-    setWidthOneRpm((icup->index % 2) ? calcParam.getWidthOneRpmHall() :
-		   calcParam.getWidthOneRpmOpto());
-  } else {
-    setWidthOneRpm(calcParam.getWidthOneRpmHall());
-  }
-#else
   setWidthOneRpm(calcParam.getWidthOneRpmHall());  
-#endif
   icuStartCapture(icup);
   icuEnableNotifications(icup);
 }
@@ -92,14 +83,14 @@ void PeriodSense::setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuc
       }
       licup->hasOverflow = false;
 #ifdef TRACE
-      palClearLine(LINE_LED1);
+      //      palClearLine(LINE_LED1);
 #endif
     } ,
     .overflow_cb =  [] (ICUDriver *licup) {
       winErr[licup->index].push(1);
       licup->hasOverflow = true;
 #ifdef TRACE
-      palSetLine(LINE_LED1); 	
+      //      palSetLine(LINE_LED1); 	
 #endif
     },
     .channel = channel,
@@ -115,6 +106,26 @@ void PeriodSense::setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuc
 
 void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
 {
+#ifdef TRACE
+  if (userParam.getInterleavedSensor() == true) {
+    if ((indexer %2) == 0) {
+      setIcuForHallSensor(_icup, channel);
+    } else {
+      setIcuForOptoCouplerSensor(_icup, channel);
+    }
+  } else {
+    switch (userParam.getSensorType()) {
+    case  SensorType::Esc_coupler :
+      setIcuForOptoCouplerSensor(_icup, channel);
+      break;
+    case  SensorType::Hall_effect :
+      setIcuForHallSensor(_icup, channel);
+      break;
+    default:
+      FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid SensorType value"));
+    }
+  }
+#else
   switch (userParam.getSensorType()) {
   case  SensorType::Esc_coupler :
     setIcuForOptoCouplerSensor(_icup, channel);
@@ -125,6 +136,7 @@ void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
   default:
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid SensorType value"));
   }
+#endif
 }
 
   void PeriodSense::stopIcu(void)
