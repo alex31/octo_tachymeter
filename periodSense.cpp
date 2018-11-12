@@ -89,8 +89,6 @@ void PeriodSense::setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuc
 	const uint32_t diff = (nowTS - oldTS);
 	winAvg[licup->index].push(diff);
 	winErr[licup->index].push(0);
-      } else {
-	winErr[licup->index].push(1);
       }
       licup->hasOverflow = false;
 #ifdef TRACE

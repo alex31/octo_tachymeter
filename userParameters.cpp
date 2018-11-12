@@ -108,7 +108,7 @@ bool CalculatedParam::cache(void)
   }
 
   widthOneRpmHall =  TIMER_FREQ_IN  * 60ULL / timDivider / up.getMotorNbMagnets();
-  widthOneRpmOpto =  TIMER_FREQ_OPTO  * 60ULL / up.getMotorNbMagnets();
+  widthOneRpmOpto =  STM32_HCLK  * 60ULL / up.getMotorNbMagnets();
 
   const uint32_t bitResolution = logf(widthOneRpmHall/up.getMaxRpm()) / logf(2);
   if (bitResolution < 3) {
