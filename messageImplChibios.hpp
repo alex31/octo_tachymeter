@@ -66,7 +66,7 @@ void  runOnRecept(void) const final {
     userParam.setMinRpm(data->minRpm);
     userParam.setMaxRpm(data->maxRpm);
     userParam.setMotorNbMagnets(data->motorNbMagnets);
-#ifdef DEBUG
+#ifdef TRACE
     userParam.setNbMotors(data->nbMotors % 10);
     userParam.setInterleavedSensor(data->nbMotors > 10);
 #else
@@ -74,6 +74,8 @@ void  runOnRecept(void) const final {
 #endif
     userParam.setSensorType(data->sensorType);
     DebugTrace("runOnRecept MotorParameters");
+    DebugTrace("nb motor =%lu interleaved =%d", userParam.getNbMotors(),
+	       userParam.getInterleavedSensor());
     if (userParam != beforeSet) {
       DebugTrace("store new conf to eeprom");
       userParam.storeConfToEEprom();

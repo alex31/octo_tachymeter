@@ -76,7 +76,7 @@ bool CalculatedParam::cache(void)
     return false;
   }
 
-#ifdef DEBUG
+#ifdef TRACE
   if (up.getInterleavedSensor() == true) {
     if ((up.getNbMotors() %2)) {
       FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid odd NbMotors (interleaved)"));

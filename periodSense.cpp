@@ -53,10 +53,10 @@ void PeriodSense::setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_
 		 "TIMER_FREQ_IN not compatible with timer source clock");
 
   setDivider(calcParam.getTimDivider());
-#ifdef DEBUG
+#ifdef TRACE
   if (userParam.getInterleavedSensor() == true) {
     setWidthOneRpm((icup->index % 2) ? calcParam.getWidthOneRpmHall() :
-		   calcParam.getWidthOneRpmHall());
+		   calcParam.getWidthOneRpmOpto());
   } else {
     setWidthOneRpm(calcParam.getWidthOneRpmHall());
   }

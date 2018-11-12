@@ -32,9 +32,9 @@ public:
   void setNbMotors(const uint32_t nb) {nbMotors=nb;};
   uint32_t getNbMotors(void) const {return nbMotors;};
 
-#ifdef DEBUG
+#ifdef TRACE
   void setInterleavedSensor(const bool is) {interleavedSensor=is;};
-  uint32_t getNbMotors(void) const {return interleavedSensor;};
+  bool getInterleavedSensor(void) const {return interleavedSensor;};
 #endif
   
   bool readConfFromEEprom(void);
@@ -51,7 +51,7 @@ private:
   SensorType sensorType = INIT_SENSOR_TYPE;
 
   RunningState runningState =  INIT_RUNNING_STATE;
-#ifdef DEBUG
+#ifdef TRACE
   bool	       interleavedSensor = false;
 #endif
 };
