@@ -17,8 +17,6 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
   ftdi RX sur B10 (enlever le jumper)
   ftdi TX sur B11 (enlever le jumper)
 
-  Connecter une LED sur la broche C0 (overflow)
-  Connecter le potar à bouton sur la broche  C1 (overflow)
   Connecter une LED sur la broche C2 (flash led)
   Connecter PA5 sur PA2, PB14, PC6
 
@@ -26,16 +24,12 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
 
 /*
 
-  TODO : 
-  * tester la validité de la mesure en utilisant width car normalement (tester avant)
-    width doit être approximativement égal à period / 2
+  TODO :
+ 
+  * logger les données pour comparer les données sensor et sensorless
 
-  * alternative au capteur effet hall : interface via isolation galvanique 
-    sur une sortie controleur moteur sur entrée timer (la même que pour le pwm)
-    ° soit sous interruption (attention à l'avalanche d'IT possible)
-      50khz*8 = 400.000 IT/seconde => pas plus de 100 cycles d'horloge par IT, l'algo doit être
-      simplissime
-    ° soit en dma (on gagne les cycles d'entrée sortie de l'IT) 
+  * entrée sensor et sensorless sur deux broches differentes 
+    pour chacun des 8 timers
 
   * portage carte devboard_M767
 

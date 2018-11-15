@@ -15,6 +15,8 @@ use Tk::LabFrame;
 use Tk::ROText;
 use Carp qw/longmess cluck confess/;
 use POSIX;
+use File::Temp qw/ :mktemp  /;
+
 
 no warnings 'experimental::smartmatch';
 
@@ -32,6 +34,8 @@ sub generateOneServoFrame ($$);
 sub labelLabelFrame ($$$$;$);
 sub labelEntryFrame ($$$$;$);
 sub fhbits(@);
+sub startLog();
+sub stopLog();
 
 my $mw;
 my $mwf;
@@ -64,9 +68,12 @@ my %varDataOut = (
     'nbMessPerSec' => 0,
     'sensorType' => 0,
     'runState' => 0,
+    'logState' => 0,
 );
 
 my $rotext;
+
+my ($logFd, $logFdCount);
 
 my $serialName = $ARGV[0] // "/dev/ttyACMx";
 #my $serialHandle;
@@ -132,11 +139,14 @@ sub generatePanel ()
     $entriesFrame->pack(-side => 'left', -anchor => 'w');
 
     my $specialOrderFrame = $entriesFrame->Frame (-bd => '1m', -relief => 'sunken');
-    $specialOrderFrame->pack(-side => 'left', -anchor => 'w');
-    my @pk = (-side => 'top', -pady => '2m', -padx => '0m', 
+    $specialOrderFrame->pack(-side => 'top', -anchor => 'w');
+
+    my $rb1Frame = $specialOrderFrame->Frame (-bd => '1m', -relief => 'sunken');
+    $rb1Frame->pack(-side => 'top', -anchor => 'w');
+    my @pk = (-side => 'left', -pady => '2m', -padx => '0m', 
 	      -anchor => 'w', -fill => 'both', -expand => 'true');
     
-    $specialOrderFrame->Radiobutton (-text => "Stop",
+    $rb1Frame->Radiobutton (-text => "Stop",
 				     -variable => \ ($varDataOut{'runState'}),
 				     -value => 0,
 				     -command => sub {
@@ -148,7 +158,7 @@ sub generatePanel ()
 				     }
 	)->pack(@pk);
     
-    $specialOrderFrame->Radiobutton (-text => "Run",
+    $rb1Frame->Radiobutton (-text => "Run",
 				     -variable => \ ($varDataOut{'runState'}),
 				     -value => 1,
 				     -command => sub {
@@ -160,6 +170,28 @@ sub generatePanel ()
 					 simpleMsgSend(\$buffer);
 				     }
 	)->pack(@pk);
+
+    my $rb2Frame = $specialOrderFrame->Frame (-bd => '1m', -relief => 'sunken');
+    $rb2Frame->pack(-side => 'top', -anchor => 'w');
+    
+    $rb2Frame->Radiobutton (-text => "Log Disable",
+				     -variable => \ ($varDataOut{'logState'}),
+				     -value => 0,
+				     -command => sub {
+					 stopLog();
+				     }
+	)->pack(@pk);
+    
+    $rb2Frame->Radiobutton (-text => "Log Enable",
+				     -variable => \ ($varDataOut{'logState'}),
+				     -value => 1,
+				     -command => sub {
+					 startLog();
+				     }
+	)->pack(@pk);
+
+
+    
     
     labelEntryFrame($specialOrderFrame, "Rpm Min", \ ($varDataOut{'rpmMin'}), 'top', 10); 
     labelEntryFrame($specialOrderFrame, "Rpm Max", \ ($varDataOut{'rpmMax'}), 'top', 10); 
@@ -422,10 +454,14 @@ sub octoMessageCB ($)
 	substr($$bufferRef, 0, 1, '');
     	my $format =  'S' x $nb;
     	my @fields = unpack($format, $$bufferRef);
-#	printf ("RPMs = %s\n", join (':', @fields));
+	#	printf ("RPMs = %s\n", join (':', @fields));
+	print $logFd "$logFdCount\t" if $logFd;
+	$logFdCount++;
 	for (my $c=0; $c<$nb; $c++) {
-	    $varDataIn[$c]->{'rpm'} = sprintf ("%.0f", $fields[$c]); 
+	    $varDataIn[$c]->{'rpm'} = sprintf ("%.0f", $fields[$c]);
+	    print $logFd "$varDataIn[$c]->{'rpm'}\t" if $logFd;
 	}
+	print $logFd "\n" if $logFd;
     } elsif ($id == 5) {
 	$tachoErrMsg = unpack('Z*', $$bufferRef);
     } elsif ($id == 7) {
@@ -445,7 +481,7 @@ sub octoMessageCB ($)
 	$rotext->insert('2.0', sprintf ("width rpmMin = %d\n", $widthOneRpm/$varDataOut{rpmMin}));
 	$rotext->insert('3.0', sprintf ("width rpmMax = %d\n", $widthOneRpm/$varDataOut{rpmMax}));
 	$rotext->insert('4.0', sprintf ("resolution rpmMax = %d bits\n", 
-					log($widthOneRpm/$varDataOut{rpmMax}) / log(2)));
+					log($widthOneRpm/$varDataOut{rpmMax}) / log(2))) if $widthOneRpm;
     }
 }
 
@@ -512,6 +548,19 @@ sub sendMotorParameters()
 
     $buffer = pack ('cS', (2, $varDataOut{'nbMessPerSec'}));
     simpleMsgSend(\$buffer);
+}
+
+sub startLog()
+{
+    my $file;
+    $logFdCount = 0;
+    ($logFd, $file) = mkstemps('/tmp/octoTacho_XXXXX', '.tsv');
+}
+
+sub stopLog()
+{
+    close ($logFd);
+    $logFd = undef;
 }
 
 sub fhbits(@) 
