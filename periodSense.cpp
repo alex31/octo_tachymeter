@@ -58,6 +58,7 @@ void PeriodSense::setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_
   icuEnableNotifications(icup);
 }
 
+#if OPTOCOUPLER_ON_BOARD 
 void PeriodSense::setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuchannel_t channel)
 {
   osalDbgAssert((indexer < ICU_NUMBER_OF_ENTRIES),
@@ -103,6 +104,7 @@ void PeriodSense::setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuc
   icuStartCapture(icup);
   icuEnableNotifications(icup);
 }
+#endif
 
 void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
 {
@@ -111,13 +113,17 @@ void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
     if ((indexer %2) == 0) {
       setIcuForHallSensor(_icup, channel);
     } else {
+#if OPTOCOUPLER_ON_BOARD 
       setIcuForOptoCouplerSensor(_icup, channel);
+#endif
     }
   } else {
     switch (userParam.getSensorType()) {
+#if OPTOCOUPLER_ON_BOARD    
     case  SensorType::Esc_coupler :
       setIcuForOptoCouplerSensor(_icup, channel);
       break;
+#endif   
     case  SensorType::Hall_effect :
       setIcuForHallSensor(_icup, channel);
       break;
@@ -125,11 +131,13 @@ void PeriodSense::setIcu(ICUDriver * const _icup, const icuchannel_t channel)
       FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: invalid SensorType value"));
     }
   }
-#else
+#else // TRACE
   switch (userParam.getSensorType()) {
+#if OPTOCOUPLER_ON_BOARD  
   case  SensorType::Esc_coupler :
     setIcuForOptoCouplerSensor(_icup, channel);
     break;
+#endif
   case  SensorType::Hall_effect :
     setIcuForHallSensor(_icup, channel);
     break;
@@ -176,6 +184,8 @@ uint32_t	PeriodSense::getRPM(void) const
 
 CountWinAvg	PeriodSense::winAvg[ICU_NUMBER_OF_ENTRIES];
 ErrorWin	PeriodSense::winErr[ICU_NUMBER_OF_ENTRIES];
+#if OPTOCOUPLER_ON_BOARD 
 uint32_t	PeriodSense::optoTimeStamp[ICU_NUMBER_OF_ENTRIES] = {0};
+#endif
 size_t		PeriodSense::indexer = 0UL;
 

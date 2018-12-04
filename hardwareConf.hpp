@@ -20,15 +20,17 @@
 #                 \___|  \___/  |_| |_| |___/   \__|  |_|     \__,_| |_|  |_| |_|  \__|         
 */
 enum class SensorType : uint8_t {Hall_effect, Esc_coupler, No_Init};
+
 enum class RunningState : uint8_t {Stop, Run, Error};
 
 #ifndef __gnu_linux__
+
 
 static constexpr uint32_t TIMER_FREQ_IN = STM32_HCLK / 2UL;
 static constexpr uint32_t TIMER_DIVIDER_OPTOCOUPLER = 4UL;
 static constexpr uint32_t TIMER_FREQ_OPTO = TIMER_FREQ_IN / TIMER_DIVIDER_OPTOCOUPLER;
 
-
+#if OPTOCOUPLER_ON_BOARD == 1
 static constexpr time_msecs_t timerOptoClk2microSeconds (const time_conv_t interval)
 {
   return  (((time_conv_t)(interval) * (time_conv_t)1000000) +      
@@ -52,6 +54,7 @@ static constexpr sysinterval_t milliSeconds2timerOptoClk (const time_conv_t msec
 {
   return  microSeconds2timerOptoClk(1000 * msecs);
 }
+#endif
 
 static constexpr uint32_t operator"" _pwmChannel (unsigned long long int channel)
 {
@@ -74,6 +77,7 @@ static constexpr uint32_t operator"" _percent (unsigned long long int freq)
   return freq * 100UL;
 }
 
+#if OPTOCOUPLER_ON_BOARD == 1
 static constexpr uint32_t operator"" _tim_opto_usec (unsigned long long int duration)
 {
   return microSeconds2timerOptoClk(duration);
@@ -83,7 +87,7 @@ static constexpr uint32_t operator"" _tim_opto_msec (unsigned long long int dura
 {
   return milliSeconds2timerOptoClk(duration);
 }
-
+#endif
 
 
 /*
@@ -107,9 +111,10 @@ static constexpr uint32_t MIN_PERIOD_WIDTH_RATIO_TIME10 = 15UL;
 static constexpr uint32_t MAX_PERIOD_WIDTH_RATIO_TIME10 = 22UL;
 
 // esc opto coupler parameters
+#if OPTOCOUPLER_ON_BOARD == 1
 static constexpr uint32_t INACTIVE_DURATION_TO_DETECT_END = 80_tim_opto_usec;
 static constexpr uint32_t INACTIVE_DURATION_TO_DETECT_ERROR = 2_tim_opto_msec;
-
+#endif
 // parameters that will be used *only* at the first run, 
 // before parameters are stored in flash memory.
 static constexpr SensorType INIT_SENSOR_TYPE = SensorType::Hall_effect;
@@ -121,8 +126,9 @@ static constexpr uint32_t INIT_MOTOR_NB_MAGNETS   = 14UL;
 static constexpr uint32_t INIT_MOTOR_NB_MOTORS   = 4UL;
  
 
-
+#if OPTOCOUPLER_ON_BOARD == 1
 static_assert(INACTIVE_DURATION_TO_DETECT_ERROR < (1 << TIMER_WIDTH_BITS),
 	      "opto coupler INACTIVE_DURATION_TO_DETECT_ERROR to large for timer width");
+#endif
 
 #endif // #ifndef __gnu_linux__

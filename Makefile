@@ -13,6 +13,7 @@ OPT_SIZE := 3
 EXECMODE := $(DEBUG)
 #EXECMODE := $(OPT_SPEED)
 #EXECMODE := $(OPT_SIZE)
+OPTOCOUPLER_ON_BOARD := 1
 
 GCCVERSIONGTEQ7 := $(shell expr `arm-none-eabi-gcc -dumpversion | cut -f1 -d.` \>= 7)
 GCC_DIAG =  -Werror -Wno-error=unused-variable -Wno-error=format \
@@ -262,6 +263,8 @@ UDEFS = -DTRACE -DCHDEBUG_ENABLE=1
 else
 UDEFS = -DCHDEBUG_ENABLE=0
 endif
+
+UDEFS += -DOPTOCOUPLER_ON_BOARD=$(OPTOCOUPLER_ON_BOARD)
 
 # Define ASM defines here
 ifeq ($(EXECMODE),$(DEBUG))

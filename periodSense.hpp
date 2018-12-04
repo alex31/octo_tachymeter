@@ -14,8 +14,8 @@
 namespace Lock {
   class DiscardIsr {
     public:
-    static void lock(void) {chSysSuspend();};
-    static void unlock(void) {chSysEnable();};
+    static inline void lock(void) {chSysSuspend();};
+    static inline void unlock(void) {chSysEnable();};
   };
 };
 
@@ -47,8 +47,9 @@ public:
 private:
   void setDivider (const uint16_t divider);
   void setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_t channel);
+#if OPTOCOUPLER_ON_BOARD
   void setIcuForOptoCouplerSensor(ICUDriver * const _icup, const icuchannel_t channel);
-
+#endif
 
   ICUDriver *		icup;
   ICUConfig		config;
@@ -56,7 +57,9 @@ private:
 
   static CountWinAvg	winAvg[ICU_NUMBER_OF_ENTRIES];
   static ErrorWin	winErr[ICU_NUMBER_OF_ENTRIES];
+#if OPTOCOUPLER_ON_BOARD
   static uint32_t	optoTimeStamp[ICU_NUMBER_OF_ENTRIES];
+#endif
   static size_t		indexer;
   
 };
