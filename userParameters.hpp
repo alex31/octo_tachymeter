@@ -4,6 +4,7 @@
 #include <ch.h>
 #include <hal.h>
 #include <cstring>
+#include "periodSense.hpp"
 
 
 class UserParam {
@@ -31,6 +32,14 @@ public:
 
   void setNbMotors(const uint32_t nb) {nbMotors=nb;};
   uint32_t getNbMotors(void) const {return nbMotors;};
+  
+  void setWinAvgSize(const uint32_t nb) {PeriodSense::setWinAvgSize(windowFilterSize=nb);};
+  uint32_t getWinAvgSize(void) {return windowFilterSize=PeriodSense::getWinAvgSize();};
+
+  void setWinAvgMedianSize(const uint32_t nb){PeriodSense::setWinAvgMedianSize(medianFilterSize=nb);};
+  uint32_t getWinAvgMedianSize(void) {return  medianFilterSize=PeriodSense::getWinAvgMedianSize();};
+
+
 
 #ifdef TRACE
   void setInterleavedSensor(const bool is) {interleavedSensor=is;};
@@ -49,7 +58,8 @@ private:
   uint32_t motorNbMagnets = INIT_MOTOR_NB_MAGNETS;
   uint32_t nbMotors = INIT_MOTOR_NB_MOTORS;
   SensorType sensorType = INIT_SENSOR_TYPE;
-
+  uint8_t  windowFilterSize = INIT_WINDOW_FILTER_SIZE;
+  uint8_t  medianFilterSize = INIT_MEDIAN_FILTER_SIZE;
   RunningState runningState =  INIT_RUNNING_STATE;
 #ifdef TRACE
   bool	       interleavedSensor = false;

@@ -26,7 +26,10 @@ Connecter sur la carte de dev le chip convertisseur USB série  :
 
   TODO :
  
-  * logger les données pour comparer les données sensor et sensorless
+  * sauvegarde en flash des paramètres du filtre passe bas + median
+
+  * fix mode OPTO : debugger avec l'analyseur logique pour voir si le pb 
+    à la décélération est solutionable
 
   * entrée sensor et sensorless sur deux broches differentes 
     pour chacun des 8 timers

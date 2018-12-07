@@ -180,9 +180,32 @@ uint32_t	PeriodSense::getRPM(void) const
   return  getWidthOneRpm() / getPeriodAverage();
 }
 
+void	 PeriodSense::setWinAvgSize(const uint8_t size)
+{
+  for (auto &wa : winAvg) {
+    wa.resize(size);
+  };
+}
+
+uint8_t PeriodSense::getWinAvgSize(void)
+{
+  return winAvg[0].size();
+}
+
+void	 PeriodSense::setWinAvgMedianSize(const uint8_t size)
+{
+  for (auto &wa : winAvg) {
+    wa.setMedianFilterSize(size);
+  };
+}
+
+uint8_t PeriodSense::getWinAvgMedianSize(void)
+{
+  return winAvg[0].getMedianFilterSize();
+}
 
 
-CountWinAvg	PeriodSense::winAvg[ICU_NUMBER_OF_ENTRIES];
+CountWinAvg	PeriodSense::winAvg[ICU_NUMBER_OF_ENTRIES]{INIT_MEDIAN_FILTER_SIZE};
 ErrorWin	PeriodSense::winErr[ICU_NUMBER_OF_ENTRIES];
 #if OPTOCOUPLER_ON_BOARD 
 uint32_t	PeriodSense::optoTimeStamp[ICU_NUMBER_OF_ENTRIES] = {0};

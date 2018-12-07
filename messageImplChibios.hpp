@@ -102,6 +102,8 @@ void  runOnRecept(void) const final {
     .widthOneRpm = calcParam.getWidthOneRpmOpto(),
     .timDivider =  calcParam.getTimDivider(),
     .messPerSecond = CH_CFG_ST_FREQUENCY / userParam.getTicksBetweenMessages(),
+    .windowSize = static_cast<uint8_t>(userParam.getWinAvgSize()),
+    .medianSize = static_cast<uint8_t>(userParam.getWinAvgMedianSize()),
     .runningState = userParam.getRunningState()
   };
   DebugTrace("runOnRecept GetTachoStates");
@@ -109,3 +111,9 @@ void  runOnRecept(void) const final {
 }
 };
 
+Derive_Msg(FilterParam) //{
+void  runOnRecept(void) const final {
+  userParam.setWinAvgSize(data->windowSize);
+  userParam.setWinAvgMedianSize(data->medianSize);
+}
+};

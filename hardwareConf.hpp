@@ -124,7 +124,9 @@ static constexpr uint32_t INIT_MIN_RPM = 300UL;
 static constexpr uint32_t INIT_MAX_RPM = 30000UL;
 static constexpr uint32_t INIT_MOTOR_NB_MAGNETS   = 14UL;
 static constexpr uint32_t INIT_MOTOR_NB_MOTORS   = 4UL;
- 
+static constexpr uint8_t  INIT_WINDOW_FILTER_SIZE = 8;
+static constexpr uint8_t  INIT_MEDIAN_FILTER_SIZE = 1;
+static constexpr uint8_t  INIT_ERRORS_WINDOW_SIZE = 64;
 
 #if OPTOCOUPLER_ON_BOARD == 1
 static_assert(INACTIVE_DURATION_TO_DETECT_ERROR < (1 << TIMER_WIDTH_BITS),

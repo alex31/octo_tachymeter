@@ -5,6 +5,12 @@
 #include <bsd/string.h>
 #endif
 
+/*
+  after having defined message content here you need to :
+  ° define behavior in messageImplChibios.hpp, linux/messageImplLinux.hpp
+  ° register in common/messageCommonRegister.cpp
+ */
+
 // id 0
 struct __attribute__((packed)) Errors {
   using AType = uint8_t;
@@ -60,5 +66,13 @@ struct __attribute__((packed)) TachoStates {
   uint32_t widthOneRpm;
   uint32_t timDivider;
   uint32_t messPerSecond;
+  uint8_t windowSize;
+  uint8_t medianSize;
   RunningState runningState;
+};
+
+// id 8
+struct __attribute__((packed)) FilterParam {
+  uint8_t windowSize;
+  uint8_t medianSize;
 };

@@ -52,12 +52,16 @@ bool UserParam::readConfFromEEprom(void)
       FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom wipe"));
       return false;
     }
-
+    getWinAvgSize();
+    getWinAvgMedianSize();
     if (eepromStore(TACHO_PARAMS, this, sizeof(*this)) != PROG_OK) {
       FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: initial eeprom store"));
     }
   }
-
+  
+  PeriodSense::setWinAvgSize(getWinAvgSize());
+  PeriodSense::setWinAvgMedianSize(getWinAvgMedianSize());
+  
   return true;
 }
 
