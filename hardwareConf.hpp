@@ -124,7 +124,7 @@ static constexpr uint32_t INIT_MIN_RPM = 300UL;
 static constexpr uint32_t INIT_MAX_RPM = 30000UL;
 static constexpr uint32_t INIT_MOTOR_NB_MAGNETS   = 14UL;
 static constexpr uint32_t INIT_MOTOR_NB_MOTORS   = 4UL;
-static constexpr uint8_t  INIT_WINDOW_FILTER_SIZE = 8;
+static constexpr uint8_t  INIT_WINDOW_FILTER_SIZE = 16;
 static constexpr uint8_t  INIT_MEDIAN_FILTER_SIZE = 1;
 static constexpr uint8_t  INIT_ERRORS_WINDOW_SIZE = 64;
 
