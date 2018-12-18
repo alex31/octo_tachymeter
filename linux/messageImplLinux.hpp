@@ -50,4 +50,8 @@ Derive_Msg(StartStopMeasure)
 Derive_Msg(MotorParameters)
 };
 
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(FilterParam)
+};
+
 

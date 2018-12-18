@@ -115,5 +115,6 @@ Derive_Msg(FilterParam) //{
 void  runOnRecept(void) const final {
   userParam.setWinAvgSize(data->windowSize);
   userParam.setWinAvgMedianSize(data->medianSize);
+  DebugTrace("runOnRecept FilterParam w=%d m=%d", data->windowSize, data->medianSize);
 }
 };

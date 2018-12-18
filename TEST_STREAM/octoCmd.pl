@@ -25,6 +25,7 @@ sub statusFunc ($$$$$$$);
 sub initSerial ($);
 sub serialCb();
 sub sendMotorParameters();
+sub sendFilterParameters();
 sub octoMessageCB($);
 sub messagePollingCB();
 sub getSerial();
@@ -66,6 +67,8 @@ my %varDataOut = (
     'motorMagnets' => 0,
     'nbMotors' => 0,
     'nbMessPerSec' => 0,
+    'windowSize' => 0,
+    'medianSize' => 0,
     'sensorType' => 0,
     'runState' => 0,
     'logState' => 0,
@@ -163,6 +166,7 @@ sub generatePanel ()
 				     -value => 1,
 				     -command => sub {
 					 $tachoErrMsg='';
+					 sendFilterParameters();
 					 sendMotorParameters();
 					 my $buffer = pack ('cc', (3, 1));
 					 simpleMsgSend(\$buffer);
@@ -196,8 +200,10 @@ sub generatePanel ()
     labelEntryFrame($specialOrderFrame, "Rpm Min", \ ($varDataOut{'rpmMin'}), 'top', 10); 
     labelEntryFrame($specialOrderFrame, "Rpm Max", \ ($varDataOut{'rpmMax'}), 'top', 10); 
     labelEntryFrame($specialOrderFrame, "Nb Magnets", \ ($varDataOut{'motorMagnets'}), 'top', 10); 
-    labelEntryFrame($specialOrderFrame, "Mb Motors", \ ($varDataOut{'nbMotors'}), 'top', 10); 
-    labelEntryFrame($specialOrderFrame, "Mb Mess / Sec", \ ($varDataOut{'nbMessPerSec'}), 'top', 10); 
+    labelEntryFrame($specialOrderFrame, "Nb Motors", \ ($varDataOut{'nbMotors'}), 'top', 10); 
+    labelEntryFrame($specialOrderFrame, "Nb Mess / Sec", \ ($varDataOut{'nbMessPerSec'}), 'top', 10); 
+    labelEntryFrame($specialOrderFrame, "Window Size", \ ($varDataOut{'windowSize'}), 'top', 10); 
+    labelEntryFrame($specialOrderFrame, "Median Size", \ ($varDataOut{'medianSize'}), 'top', 10); 
     labelLabelFrame($specialOrderFrame, "lastErr = ", \ ($tachoErrMsg), 'left', 48);
 
     my @pl = qw/-side left -expand 1 -padx .5c -pady .5c/;
@@ -466,16 +472,19 @@ sub octoMessageCB ($)
 	$tachoErrMsg = unpack('Z*', $$bufferRef);
     } elsif ($id == 7) {
 	my ($minRpm, $maxRpm, $motorNbMagnets, $nbMotors, $sensorType, 
-	    $widthOneRpm, $timDivider, $nbMessPerSec, $runningState) = 
-		unpack('VVCCCVVVC', $$bufferRef);
+	    $widthOneRpm, $timDivider, $nbMessPerSec, 
+	    $windowSize, $medianSize, $runningState) = 
+		unpack('VVCCCVVVCCC', $$bufferRef);
 	$varDataOut{rpmMin} = $minRpm;
 	$varDataOut{rpmMax} = $maxRpm;
 	$varDataOut{motorMagnets} = $motorNbMagnets;
 	$varDataOut{nbMotors} = $nbMotors;
 	$varDataOut{nbMessPerSec} = $nbMessPerSec;
 	$varDataOut{sensorType} = $sensorType;
-	$varDataOut{'runState'} = $runningState;
-	$varDataOut{'sensorType'} = $sensorType;
+	$varDataOut{windowSize} = $windowSize;
+	$varDataOut{medianSize} = $medianSize;
+	$varDataOut{runState} = $runningState;
+	$varDataOut{sensorType} = $sensorType;
 	$rotext->delete('1.0', 'end');
 	$rotext->insert('1.0', "timDivider = $timDivider\n");
 	$rotext->insert('2.0', sprintf ("width rpmMin = %d\n", $widthOneRpm/$varDataOut{rpmMin}));
@@ -547,6 +556,20 @@ sub sendMotorParameters()
     simpleMsgSend(\$buffer);
 
     $buffer = pack ('cS', (2, $varDataOut{'nbMessPerSec'}));
+    simpleMsgSend(\$buffer);
+}
+
+sub sendFilterParameters()
+{
+    foreach my $k (keys %varDataOut) {
+	$varDataOut{$k} = int($varDataOut{$k});
+    }
+
+    my $buffer = pack ('ccc', (
+			   8, # id
+			   $varDataOut{'windowSize'},
+			   $varDataOut{'medianSize'}
+		       ));
     simpleMsgSend(\$buffer);
 }
 
