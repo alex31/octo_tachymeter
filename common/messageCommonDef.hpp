@@ -76,3 +76,8 @@ struct __attribute__((packed)) FilterParam {
   uint8_t windowSize;
   uint8_t medianSize;
 };
+
+// id 9
+struct __attribute__((packed)) Eeprom {
+  EepromCommand command;
+};

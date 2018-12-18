@@ -144,8 +144,11 @@ sub generatePanel ()
     my $specialOrderFrame = $entriesFrame->Frame (-bd => '1m', -relief => 'sunken');
     $specialOrderFrame->pack(-side => 'top', -anchor => 'w');
 
-    my $rb1Frame = $specialOrderFrame->Frame (-bd => '1m', -relief => 'sunken');
-    $rb1Frame->pack(-side => 'top', -anchor => 'w');
+    my $topFrame= $specialOrderFrame->Frame (-bd => '1m', -relief => 'sunken');
+    $topFrame->pack(-side => 'top', -anchor => 'w');
+    my $rb1Frame = $topFrame->Frame (-bd => '1m', -relief => 'sunken');
+    $rb1Frame->pack(-side => 'left', -anchor => 'w');
+    
     my @pk = (-side => 'left', -pady => '2m', -padx => '0m', 
 	      -anchor => 'w', -fill => 'both', -expand => 'true');
     
@@ -175,8 +178,8 @@ sub generatePanel ()
 				     }
 	)->pack(@pk);
 
-    my $rb2Frame = $specialOrderFrame->Frame (-bd => '1m', -relief => 'sunken');
-    $rb2Frame->pack(-side => 'top', -anchor => 'w');
+    my $rb2Frame = $topFrame->Frame (-bd => '1m', -relief => 'sunken');
+    $rb2Frame->pack(-side => 'left', -anchor => 'w');
     
     $rb2Frame->Radiobutton (-text => "Log Disable",
 				     -variable => \ ($varDataOut{'logState'}),
@@ -196,6 +199,26 @@ sub generatePanel ()
 
 
     
+    $topFrame->Button(-text => 'store',
+		      -command => sub {
+			  my $buffer = pack ('cc', (9, 0));
+			  simpleMsgSend(\$buffer);  
+		      })->pack(@pk);
+    $topFrame->Button(-text => 'load',
+		      -command => sub {
+			  my $buffer = pack ('cc', (9, 1));
+			  simpleMsgSend(\$buffer);  
+		      })->pack(@pk);
+   $topFrame->Button(-text => 'wipe',
+		      -command => sub {
+			  my $buffer = pack ('cc', (9, 2));
+			  simpleMsgSend(\$buffer);  
+		      })->pack(@pk);
+   $topFrame->Button(-text => 'erase',
+		      -command => sub {
+			  my $buffer = pack ('cc', (9, 3));
+			  simpleMsgSend(\$buffer);  
+		      })->pack(@pk);
     
     labelEntryFrame($specialOrderFrame, "Rpm Min", \ ($varDataOut{'rpmMin'}), 'top', 10); 
     labelEntryFrame($specialOrderFrame, "Rpm Max", \ ($varDataOut{'rpmMax'}), 'top', 10); 

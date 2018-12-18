@@ -11,6 +11,7 @@ void messageInit(const char* device)
   msgRegister<Msg_GetTachoStates>();
   msgRegister<Msg_TachoStates>();
   msgRegister<Msg_FilterParam>();
+  msgRegister<Msg_Eeprom>();
   
   FrameMsgReceive::launchMillFrameThread();
 }

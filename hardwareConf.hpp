@@ -20,7 +20,7 @@
 #                 \___|  \___/  |_| |_| |___/   \__|  |_|     \__,_| |_|  |_| |_|  \__|         
 */
 enum class SensorType : uint8_t {Hall_effect, Esc_coupler, No_Init};
-
+enum class EepromCommand : uint8_t {Store, Load, Wipe, Erase};
 enum class RunningState : uint8_t {Stop, Run, Error};
 
 #ifndef __gnu_linux__

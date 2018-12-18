@@ -54,4 +54,8 @@ Derive_Msg(MotorParameters)
 Derive_Msg(FilterParam)
 };
 
+// no runOnRecept impl since this message is only meant to be sent
+Derive_Msg(Eeprom)
+};
+
 

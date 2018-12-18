@@ -59,8 +59,8 @@ bool UserParam::readConfFromEEprom(void)
     }
   }
   
-  PeriodSense::setWinAvgSize(getWinAvgSize());
-  PeriodSense::setWinAvgMedianSize(getWinAvgMedianSize());
+  PeriodSense::setWinAvgSize(windowFilterSize);
+  PeriodSense::setWinAvgMedianSize(medianFilterSize);
   
   return true;
 }
