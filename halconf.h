@@ -36,12 +36,17 @@
 #if !defined(HAL_USE_PAL) || defined(__DOXYGEN__)
 #define HAL_USE_PAL                 TRUE
 #endif
-
+#if !defined(PAL_USE_CALLBACKS) || defined(__DOXYGEN__)
+#define  PAL_USE_CALLBACKS          TRUE
+#endif
+#if !defined(PAL_USE_WAIT) || defined(__DOXYGEN__)
+#define PAL_USE_WAIT                TRUE
+#endif
 /**
  * @brief   Enables the ADC subsystem.
  */
 #if !defined(HAL_USE_ADC) || defined(__DOXYGEN__)
-#define HAL_USE_ADC                 TRUE
+#define HAL_USE_ADC                 FALSE
 #endif
 
 /**
@@ -115,11 +120,7 @@
 /**
  * @brief   Enables the PWM subsystem.
  */
-#if USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
 #if !defined(HAL_USE_PWM) || defined(__DOXYGEN__)
-#define HAL_USE_PWM                 TRUE
-#endif
-#else
 #define HAL_USE_PWM                 FALSE
 #endif
 
@@ -148,7 +149,7 @@
  * @brief   Enables the SERIAL over USB subsystem.
  */
 #if !defined(HAL_USE_SERIAL_USB) || defined(__DOXYGEN__)
-#define HAL_USE_SERIAL_USB          FALSE
+#define HAL_USE_SERIAL_USB          TRUE
 #endif
 
 /**
@@ -169,7 +170,7 @@
  * @brief   Enables the USB subsystem.
  */
 #if !defined(HAL_USE_USB) || defined(__DOXYGEN__)
-#define HAL_USE_USB                 FALSE
+#define HAL_USE_USB                 TRUE
 #endif
 
 /**

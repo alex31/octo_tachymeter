@@ -74,7 +74,7 @@
  * ADC driver system settings.
  */
 #define STM32_ADC_ADCPRE                    ADC_CCR_ADCPRE_DIV8
-#define STM32_ADC_USE_ADC1                  TRUE
+#define STM32_ADC_USE_ADC1                  FALSE
 #define STM32_ADC_USE_ADC2                  FALSE
 #define STM32_ADC_USE_ADC3                  FALSE
 #define STM32_ADC_ADC1_DMA_STREAM           STM32_DMA_STREAM_ID(2, 4)
@@ -195,7 +195,7 @@
  * ICU driver system settings.
  */
 #define STM32_ICU_USE_TIM1                   TRUE
-#define STM32_ICU_USE_TIM2                   (!USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS)
+#define STM32_ICU_USE_TIM2                   TRUE
 #define STM32_ICU_USE_TIM3                   TRUE
 #define STM32_ICU_USE_TIM4                   TRUE
 #define STM32_ICU_USE_TIM5                   TRUE
@@ -227,7 +227,7 @@
  */
 #define STM32_PWM_USE_ADVANCED              FALSE
 #define STM32_PWM_USE_TIM1                  FALSE
-#define STM32_PWM_USE_TIM2                  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
+#define STM32_PWM_USE_TIM2                  FALSE
 #define STM32_PWM_USE_TIM3                  FALSE
 #define STM32_PWM_USE_TIM4                  FALSE
 #define STM32_PWM_USE_TIM5                  FALSE
@@ -332,7 +332,7 @@
 /*
  * USB driver system settings.
  */
-#define STM32_USB_USE_OTG1                  FALSE
+#define STM32_USB_USE_OTG1                  TRUE
 #define STM32_USB_USE_OTG2                  FALSE
 #define STM32_USB_OTG1_IRQ_PRIORITY         14
 #define STM32_USB_OTG2_IRQ_PRIORITY         14
@@ -350,7 +350,9 @@
 
 #define CH_HEAP_USE_TLSF 0 // if 0 or undef, chAlloc will be used
 #define CH_HEAP_SIZE (32*1024)
-#define CONSOLE_DEV_SD SD3
+#define CONSOLE_DEV_USB 1
+#define USBDRIVER USBD1
+//#define CONSOLE_DEV_SD SD3
 #define SIMPLE_MESSAGE_API_UART 1
 
 #endif /* _MCUCONF_H_ */

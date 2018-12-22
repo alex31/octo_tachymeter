@@ -14,9 +14,7 @@ using IcuEntry = std::pair<ICUDriver * const, const icuchannel_t>;
 
 static constexpr std::array<IcuEntry, ICU_NUMBER_OF_ENTRIES> ICU_TIMER = {{
       {&ICUD1, ICU_CHANNEL_1},  // 168
-#if USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS == 0
       {&ICUD2, ICU_CHANNEL_1},  // 84
-#endif
       {&ICUD3, ICU_CHANNEL_1},  // 84
       {&ICUD4, ICU_CHANNEL_1},  // 84
       {&ICUD5, ICU_CHANNEL_1},  // 84

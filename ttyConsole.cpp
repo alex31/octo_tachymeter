@@ -13,6 +13,7 @@
 #include <etl/vector.h>
 #include "userParameters.hpp"
 #include "eeprom.h"
+#include "usb_serial.h"
 
 /*===========================================================================*/
 /* START OF EDITABLE SECTION                                           */
@@ -448,36 +449,24 @@ void consoleLaunch (void)
 
  
 #if CONSOLE_DEV_USB != 0
-   while (TRUE) {
-    if (!shelltp) {
-      systime_t time=90;
-
-
-      while (usbGetDriver()->state != USB_ACTIVE) {
-	if (time != 100) {
-	  time++;
-	  chThdSleepMilliseconds(100);
-	} else {
-	  time=90;
-	  //usbSerialReset(&SDU1);
-	}
-      }
-      
-      // activate driver, giovani workaround
-      chnGetTimeout(&SDU1, TIME_IMMEDIATE);
-      while (!isUsbConnected()) {
-	chThdSleepMilliseconds(100);
-      }
-      
-      shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
-    } else if (shelltp && (chThdTerminated(shelltp))) {
-      chThdRelease(shelltp);    /* Recovers memory of the previous shell.   */
-      shelltp = NULL;           /* Triggers spawning of a new shell.        */
+  if (!shelltp) {
+    while (usbGetDriver()->state != USB_ACTIVE) {
+      chThdSleepMilliseconds(10);
     }
-    chThdSleepMilliseconds(100);
+    
+    // activate driver, giovani workaround
+    chnGetTimeout(&SDU1, TIME_IMMEDIATE);
+    while (!isUsbConnected()) {
+      chThdSleepMilliseconds(10);
+    }
+    
+    shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
+  } else if (shelltp && (chThdTerminated(shelltp))) {
+    chThdRelease(shelltp);    /* Recovers memory of the previous shell.   */
+    shelltp = NULL;           /* Triggers spawning of a new shell.        */
   }
 
-#else
+#else // CONSOLE_DEV_USB == 0
 
    if (!shelltp) {
      shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);

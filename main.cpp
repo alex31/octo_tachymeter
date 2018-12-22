@@ -7,7 +7,6 @@
 #include "led_blink.hpp"
 #include "hardwareConf.hpp"
 #include "periodSense.hpp"
-#include "pwm.h"
 #include "rpmMsg.hpp"
 #include "userParameters.hpp"
 #include "messageImplChibios.hpp"
@@ -63,10 +62,8 @@ int main(void)
    * - Kernel initialization, the main() function becomes a thread and the
    *   RTOS is active.
    */
-#ifdef TRACE
-  consoleInit();
-  consoleLaunch();
-#endif
+
+
 
   userParam.readConfFromEEprom();
   messageInit();
@@ -80,11 +77,24 @@ int main(void)
   ledBlink.setFlashes(rpmGetNumTrackedMotors(),
 		      rpmGetSensorType() == SensorType::Hall_effect ? 1 : 2);
 
-#if  USE_TIM2_IN_PWM_MODE_FOR_SELF_TESTS
-  launchPwm();
-#endif
-  
-  // main thread does nothing
-  chThdSleep(TIME_INFINITE);
+  /*
+    USB_VBUS est connecté à une broche en input pulldown et à BOOT0
+    Si  USB_VBUS est à niveau haut à la mise sous tension : le MCU passe en mode bootloader
+    Si USB_VBUS passe à niveau haut pendant le fonctionnement : on lance un shell
+    pour changer les configuration stockées en mémoire flash
+   */
+
+  palEnableLineEvent(LINE_USB_VBUS, PAL_EVENT_MODE_RISING_EDGE);
+  palWaitLineTimeout(LINE_USB_VBUS, TIME_INFINITE);
+
+  consoleInit();
+  consoleLaunch();
+  palSetLine(LINE_LED2);
+
+  palDisableLineEvent(LINE_USB_VBUS);
+  palEnableLineEvent(LINE_USB_VBUS, PAL_EVENT_MODE_FALLING_EDGE);
+  palWaitLineTimeout(LINE_USB_VBUS, TIME_INFINITE);
+  palClearLine(LINE_LED2);
+  systemReset();
 }
 

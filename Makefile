@@ -10,9 +10,9 @@ DEBUG := 1
 OPT_SPEED := 2
 OPT_SIZE := 3
 
-EXECMODE := $(DEBUG)
+#EXECMODE := $(DEBUG)
 #EXECMODE := $(OPT_SPEED)
-#EXECMODE := $(OPT_SIZE)
+EXECMODE := $(OPT_SIZE)
 OPTOCOUPLER_ON_BOARD := 1
 
 GCCVERSIONGTEQ7 := $(shell expr `arm-none-eabi-gcc -dumpversion | cut -f1 -d.` \>= 7)
@@ -168,10 +168,10 @@ CSRC = $(STARTUPSRC) \
        $(VARIOUS)/microrl/microrlShell.c \
        $(VARIOUS)/microrl/microrl.c \
        $(VARIOUS)/eeprom.c \
+       $(VARIOUS)/usb_serial.c \
        $(STMSRC)/stm32f4xx_flash.c \
-       globalVar.c \
-       potentiometre.c \
-       pwm.c
+       globalVar.c 
+
 
 # C++ sources that can be compiled in ARM or THUMB mode depending on the global
 # setting.
