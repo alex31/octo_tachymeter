@@ -129,6 +129,7 @@ CHIBIOS = $(RELATIVE)/ChibiOS_stable
 STMSRC = $(RELATIVE)/COMMON/stm
 VARIOUS = $(RELATIVE)/COMMON/various
 USBD_LIB = $(VARIOUS)/Chibios-USB-Devices
+ETL_LIB = ../../../../etl/include
 
 
 
@@ -168,7 +169,6 @@ CSRC = $(STARTUPSRC) \
        $(VARIOUS)/microrl/microrl.c \
        $(VARIOUS)/eeprom.c \
        $(STMSRC)/stm32f4xx_flash.c \
-       ttyConsole.c \
        globalVar.c \
        potentiometre.c \
        pwm.c
@@ -181,6 +181,7 @@ CPPSRC =	$(VARIOUS_CPPSRC) \
 		led_blink.cpp \
 		periodSense.cpp \
 		rpmMsg.cpp \
+	        ttyConsole.cpp \
 		main.cpp
 
 # C sources to be compiled in ARM mode regardless of the global setting.
@@ -209,6 +210,7 @@ ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 INCDIR = $(CHIBIOS)/os/license $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(TESTINC) \
          $(CHIBIOS)/os/various $(VARIOUS) $(VARIOUS_INCL) $(STMSRC) \
+         $(ETL_LIB) \
 	 ./common
 
 #

@@ -11,7 +11,7 @@ OBJSPATH := $(addprefix $(BUILDIR)/, $(OBJS))
 
 
 CPPFLAGS = -I$(SERIAL_LIB_DIR) -I$(COMMON_DIR) -I. -I.. -std=c++14 -ggdb3 -Wall -Wextra -fstrict-aliasing
-CPP = g++-7
+CPP = g++
 
 #$(info $$OBJSPATH is [${OBJSPATH}])
 

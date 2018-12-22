@@ -127,6 +127,7 @@ static constexpr uint32_t INIT_MOTOR_NB_MOTORS   = 4UL;
 static constexpr uint8_t  INIT_WINDOW_FILTER_SIZE = 16;
 static constexpr uint8_t  INIT_MEDIAN_FILTER_SIZE = 1;
 static constexpr uint8_t  INIT_ERRORS_WINDOW_SIZE = 64;
+static constexpr uint32_t  INIT_BAUD_RATE = 230400;
 
 #if OPTOCOUPLER_ON_BOARD == 1
 static_assert(INACTIVE_DURATION_TO_DETECT_ERROR < (1 << TIMER_WIDTH_BITS),

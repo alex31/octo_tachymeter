@@ -3,7 +3,7 @@
 #include "array"
 #include "globalVar.h"
 #include "stdutil.h"
-#include "ttyConsole.h"
+#include "ttyConsole.hpp"
 #include "led_blink.hpp"
 #include "hardwareConf.hpp"
 #include "periodSense.hpp"
@@ -68,8 +68,8 @@ int main(void)
   consoleLaunch();
 #endif
 
-  messageInit();
   userParam.readConfFromEEprom();
+  messageInit();
 
   if (userParam.getRunningState() == RunningState::Run) {
     rpmStartStreaming();

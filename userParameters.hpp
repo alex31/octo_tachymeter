@@ -33,6 +33,9 @@ public:
   void setNbMotors(const uint32_t nb) {nbMotors=nb;};
   uint32_t getNbMotors(void) const {return nbMotors;};
   
+  void setBaudRate(const uint32_t br) {baudRate=br;};
+  uint32_t getBaudRate(void) const {return baudRate;};
+  
   void setWinAvgSize(const uint32_t nb) {PeriodSense::setWinAvgSize(windowFilterSize=nb);};
   uint32_t getWinAvgSize(void) {return windowFilterSize=PeriodSense::getWinAvgSize();};
 
@@ -61,6 +64,7 @@ private:
   uint8_t  windowFilterSize = INIT_WINDOW_FILTER_SIZE;
   uint8_t  medianFilterSize = INIT_MEDIAN_FILTER_SIZE;
   RunningState runningState =  INIT_RUNNING_STATE;
+  uint32_t baudRate = INIT_BAUD_RATE;
 #ifdef TRACE
   bool	       interleavedSensor = false;
 #endif
