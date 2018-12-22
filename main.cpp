@@ -84,9 +84,11 @@ int main(void)
     pour changer les configuration stockées en mémoire flash
    */
 
+  
   palEnableLineEvent(LINE_USB_VBUS, PAL_EVENT_MODE_RISING_EDGE);
   palWaitLineTimeout(LINE_USB_VBUS, TIME_INFINITE);
-
+  userParam.setRunningState(RunningState::Stop);
+  
   consoleInit();
   consoleLaunch();
   palSetLine(LINE_LED2);
@@ -95,6 +97,7 @@ int main(void)
   palEnableLineEvent(LINE_USB_VBUS, PAL_EVENT_MODE_FALLING_EDGE);
   palWaitLineTimeout(LINE_USB_VBUS, TIME_INFINITE);
   palClearLine(LINE_LED2);
+  chThdSleepMilliseconds(100);
   systemReset();
 }
 
