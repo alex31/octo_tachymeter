@@ -79,7 +79,9 @@ my $rotext;
 my ($logFd, $logFdCount);
 
 my $serialName = $ARGV[0] // "/dev/ttyACMx";
-#my $serialHandle;
+my $baudRate =   $ARGV[1] // 230400;
+
+say "DBG baud rate is $baudRate";
 
 $serialName = getSerial () if $serialName eq "/dev/ttyACMx";
 
@@ -357,7 +359,7 @@ sub initSerial ($)
 
 #port configuration 115200/8/N/1
     $port->databits(8);
-    $port->baudrate(230400);
+    $port->baudrate($baudRate);
     $port->parity("none");
     $port->stopbits(1);
     $port->handshake("none");

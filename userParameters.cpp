@@ -21,10 +21,10 @@ bool UserParam::storeConfToEEprom(void)
   const ErrorCond st1 = eepromStore(TACHO_PARAMS, this, sizeof(*this));
   switch (st1) {
   case PROG_OK:
-    DebugTrace("DBG> eeprom store ok");
+    CDCTrace("DBG> eeprom store ok");
     break;
   case SECTOR_FULL_ERR:
-    DebugTrace("DBG> eeprom store full, wipe and store");
+    CDCTrace("DBG> eeprom store full, wipe and store");
     if (eepromWipe() != PROG_OK) {
       FrameMsgSendObject<Msg_TachoError>::send(TachoError("err: eeprom wipe"));
       return false;

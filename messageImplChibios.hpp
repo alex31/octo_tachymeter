@@ -9,6 +9,7 @@
 #include "userParameters.hpp"
 #include "rpmMsg.hpp"
 #include "eeprom.h"
+#include "ttyConsole.hpp"
 
 
 void messageInit(const char* device = nullptr);
@@ -32,7 +33,7 @@ Derive_Msg(TachoStates) //{
 Derive_Msg(MessPerSecond) //{
 void  runOnRecept(void) const final {
   userParam.setMessPerSecond(data->value);
-  DebugTrace("runOnRecept MessPerSecond");
+  CDCTrace("runOnRecept MessPerSecond");
 }
 };
 
@@ -42,13 +43,13 @@ void  runOnRecept(void) const final {
     userParam.setRunningState(data->runningState);
     if (data->runningState == RunningState::Stop) {
       rpmStopStreaming();
-      DebugTrace("runOnRecept Stopping");
+      CDCTrace("runOnRecept Stopping");
     } else if (data->runningState == RunningState::Run) {
-      DebugTrace("runOnRecept Starting");
+      CDCTrace("runOnRecept Starting");
       rpmStartStreaming();
     }
   } else {
-    DebugTrace("runOnRecept Unchanged state");
+    CDCTrace("runOnRecept Unchanged state");
   }
 }
 };
@@ -66,8 +67,8 @@ void  runOnRecept(void) const final {
     userParam.setNbMotors(data->nbMotors);
 #endif
     userParam.setSensorType(data->sensorType);
-    DebugTrace("runOnRecept MotorParameters");
-    DebugTrace("nb motor =%lu interleaved =%d", userParam.getNbMotors(),
+    CDCTrace("runOnRecept MotorParameters");
+    CDCTrace("nb motor =%lu interleaved =%d", userParam.getNbMotors(),
 	       userParam.getInterleavedSensor());
   } else {
     FrameMsgSendObject<Msg_TachoError>::send(TachoError("warn: ignoring MotorParameters when running"));
@@ -93,7 +94,7 @@ void  runOnRecept(void) const final {
     .medianSize = static_cast<uint8_t>(userParam.getWinAvgMedianSize()),
     .runningState = userParam.getRunningState()
   };
-  DebugTrace("runOnRecept GetTachoStates");
+  CDCTrace("runOnRecept GetTachoStates");
   FrameMsgSendObject<Msg_TachoStates>::send(ts);
 }
 };
@@ -102,13 +103,13 @@ Derive_Msg(FilterParam) //{
 void  runOnRecept(void) const final {
   userParam.setWinAvgSize(data->windowSize);
   userParam.setWinAvgMedianSize(data->medianSize);
-  DebugTrace("runOnRecept FilterParam w=%d m=%d", data->windowSize, data->medianSize);
+  CDCTrace("runOnRecept FilterParam w=%d m=%d", data->windowSize, data->medianSize);
 }
 };
 
 Derive_Msg(Eeprom) //{
 void  runOnRecept(void) const final {
-  DebugTrace("runOnRecept Eeprom Command c=%d", static_cast<int>(data->command));
+  CDCTrace("runOnRecept Eeprom Command c=%d", static_cast<int>(data->command));
   switch (data->command) {
   case EepromCommand::Store :
     userParam.storeConfToEEprom();

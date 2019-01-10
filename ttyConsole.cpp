@@ -459,8 +459,8 @@ void consoleLaunch (void)
     while (!isUsbConnected()) {
       chThdSleepMilliseconds(10);
     }
-    
     shelltp = shellCreate(&shell_cfg1, SHELL_WA_SIZE, NORMALPRIO);
+    palSetLine(LINE_LED2);
   } else if (shelltp && (chThdTerminated(shelltp))) {
     chThdRelease(shelltp);    /* Recovers memory of the previous shell.   */
     shelltp = NULL;           /* Triggers spawning of a new shell.        */
