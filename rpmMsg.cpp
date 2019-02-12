@@ -13,14 +13,14 @@
 using IcuEntry = std::pair<ICUDriver * const, const icuchannel_t>;
 
 static constexpr std::array<IcuEntry, ICU_NUMBER_OF_ENTRIES> ICU_TIMER = {{
-      {&ICUD1, ICU_CHANNEL_1},  // 168
-      {&ICUD2, ICU_CHANNEL_1},  // 84
-      {&ICUD3, ICU_CHANNEL_1},  // 84
-      {&ICUD4, ICU_CHANNEL_1},  // 84
-      {&ICUD5, ICU_CHANNEL_1},  // 84
-      {&ICUD8, ICU_CHANNEL_1},  // 168
-      {&ICUD9, ICU_CHANNEL_1},  // 168
-      {&ICUD12, ICU_CHANNEL_1}, // 168
+      {&ICUD8, ICU_CHANNEL_1},  // D8 168
+      {&ICUD1, ICU_CHANNEL_1},  // D1 168   
+      {&ICUD4, ICU_CHANNEL_1},  // D4 84
+      {&ICUD5, ICU_CHANNEL_1},  // D5 84
+      {&ICUD9, ICU_CHANNEL_1},  // D9 168
+      {&ICUD2, ICU_CHANNEL_1},  // D2 84
+      {&ICUD3, ICU_CHANNEL_1},  // D3 84
+      {&ICUD12, ICU_CHANNEL_1}, // D12 168
     }} ;
 
 //static size_t numTrackedMotor = 0;

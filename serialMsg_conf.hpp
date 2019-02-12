@@ -16,7 +16,7 @@ class SystemDependant : public SystemDependantTransport, public SystemDependantO
 public:
   static void initClass(const char* device = nullptr) {
     (void) device;
-    SystemDependantTransport::initClass(UARTD4, userParam.getBaudRate());
+    SystemDependantTransport::initClass(UARTD5, userParam.getBaudRate());
   }
 private:
   SystemDependant() = delete;
