@@ -70,7 +70,7 @@ int main(void)
   
   
   ledBlink.setFlashes(rpmGetNumTrackedMotors(),
-		      rpmGetSensorType() == SensorType::Hall_effect ? 1 : 2);
+		      userParam.getBaudRate() / 100000);
 
   /*
     USB_VBUS est connecté à une broche en input pulldown et à BOOT0 à travers un bouton poussoir
@@ -96,7 +96,7 @@ int main(void)
   palDisableLineEvent(LINE_USB_VBUS);
   palEnableLineEvent(LINE_USB_VBUS, PAL_EVENT_MODE_FALLING_EDGE);
   palWaitLineTimeout(LINE_USB_VBUS, TIME_INFINITE);
-  palClearLine(LINE_LED2);
+  palClearLine(LINE_USB_LED);
   chThdSleepMilliseconds(100);
   systemReset();
 }
