@@ -16,7 +16,7 @@ void consoleLaunch (void);
 #include "usb_serial.h"
 #define CDCTrace(fmt, ...) {if (isUsbConnected()) chprintf (chp, fmt "\r\n", ## __VA_ARGS__ );}
 #else
-#define CDC(...) 
+#define CDCTrace(...) 
 #endif // TRACE
 
 

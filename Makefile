@@ -10,8 +10,8 @@ DEBUG := 1
 OPT_SPEED := 2
 OPT_SIZE := 3
 
-EXECMODE := $(DEBUG)
-#EXECMODE := $(OPT_SPEED)
+#EXECMODE := $(DEBUG)
+EXECMODE := $(OPT_SPEED)
 #EXECMODE := $(OPT_SIZE)
 OPTOCOUPLER_ON_BOARD := 1
 
@@ -147,7 +147,7 @@ include $(CHIBIOS)/os/rt/rt.mk
 include $(CHIBIOS)/os/common/ports/ARMCMx/compilers/GCC/mk/port_v7m.mk
 # Other files (optional).
 include $(VARIOUS)/serial_message/serial_message.mk
-
+include $(STMSRC)/eeprom_f4.mk
 
 # Define linker script file here
 LDSCRIPT= $(STARTUPLD)/STM32F407xG.ld
@@ -162,6 +162,7 @@ CSRC = $(STARTUPSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
        $(VARIOUS_CSRC) \
+       $(EEPROM_CSRC) \
        $(CHIBIOS)/os/various/syscalls.c \
        $(VARIOUS)/stdutil.c \
        $(VARIOUS)/printf.c \
@@ -169,7 +170,6 @@ CSRC = $(STARTUPSRC) \
        $(VARIOUS)/microrl/microrl.c \
        $(VARIOUS)/eeprom.c \
        $(VARIOUS)/usb_serial.c \
-       $(STMSRC)/stm32f4xx_flash.c \
        globalVar.c 
 
 
@@ -209,7 +209,7 @@ ASMXSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = $(CHIBIOS)/os/license $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(TESTINC) \
-         $(CHIBIOS)/os/various $(VARIOUS) $(VARIOUS_INCL) $(STMSRC) \
+         $(CHIBIOS)/os/various $(VARIOUS) $(VARIOUS_INCL) $(EEPROM_INC) \
          $(ETL_LIB) \
 	 ./common
 
