@@ -197,13 +197,17 @@ constexpr std::array<ConfCommand, 15> map2 = {{
 #if UPDATE_TOTAL_ERRORS
     {
       .name = "errors", 
-      .set_f =  [] ([[maybe_unused]] uint32_t v) {
+      .get_f =  [] {
+	uint32_t total=0;
 	chprintf (chp, "total measure errors : ");
 	for (size_t i=0; i<userParam.getNbMotors(); i++) {
-	  chprintf (chp, "m[%u] : %lu, ",
-		    i+1,  rpmGetTotalErrors(i));
+	  const size_t motorErr = rpmGetTotalErrors(i);
+	  total += motorErr;
+	  chprintf (chp, "m[%u] : %u, ",
+		    i+1,  motorErr);
 	}
 	chprintf (chp, "\r\n");
+	return total;
       }
     },
 #endif

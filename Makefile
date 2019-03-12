@@ -14,7 +14,9 @@ OPT_SIZE := 3
 EXECMODE := $(OPT_SPEED)
 #EXECMODE := $(OPT_SIZE)
 OPTOCOUPLER_ON_BOARD := 0
-UPDATE_TOTAL_ERRORS := 1
+UPDATE_TOTAL_ERRORS := 1   # this should be disabled in normal operation because it greatly rise
+                           # code complexity and duration in ISR
+			   # this permit to get total measure errors from shell
 
 GCCVERSIONGTEQ7 := $(shell expr `arm-none-eabi-gcc -dumpversion | cut -f1 -d.` \>= 7)
 GCC_DIAG =  -Werror -Wno-error=unused-variable -Wno-error=format \
