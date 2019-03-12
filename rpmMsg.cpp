@@ -61,15 +61,22 @@ void rpmStopStreaming (void)
 }
 
 
-PeriodSense&    rpmGetPS(size_t index)
+PeriodSense&    rpmGetPS(const size_t index)
 {
   return (index < userParam.getNbMotors()) ? psa[index] : psa[0];
 }  
 
-uint16_t	rpmGetRPM(size_t index)
+uint16_t	rpmGetRPM(const size_t index)
 {
   return (index < userParam.getNbMotors()) ? psa[index].getRPM() : 0;
 }
+
+#if UPDATE_TOTAL_ERRORS
+uint32_t	rpmGetTotalErrors(const size_t index)
+{
+  return (index < userParam.getNbMotors()) ? psa[index].getTotalBadMeasure() : 0;
+}
+#endif
 
 size_t		rpmGetNumTrackedMotors(void)
 {
@@ -110,7 +117,10 @@ static void sensorStreamer (void *arg)
   Rpms   rpms;
   uint32_t cnt=0;
   systime_t ts;
-
+  
+#if UPDATE_TOTAL_ERRORS
+  PeriodSense::resetBadMeasure();
+#endif
   for (size_t i=0; i<userParam.getNbMotors(); i++) {
     psa[i].setIcu(ICU_TIMER[i].first, ICU_TIMER[i].second);
   }
@@ -126,7 +136,7 @@ static void sensorStreamer (void *arg)
       if (std::accumulate(psa.begin(), psa.begin()+userParam.getNbMotors(),
 			  0UL, // initialisation value of accumulator
 			  [](uint32_t a, auto b) {
-			    return a + b.getNumBadMeasure(); // accumulates all errors
+			    return a + b.getNumBadMeasure(); // accumulates all errors in window
 			  })) {
 	copyValToMsg(errors, psa, &PeriodSense::getNumBadMeasure);
 	FrameMsgSendObject<Msg_Errors>::send(errors);

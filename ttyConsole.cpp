@@ -12,6 +12,7 @@
 #include "etl/cstring.h"
 #include <etl/vector.h>
 #include "userParameters.hpp"
+#include "rpmMsg.hpp"
 #include "eeprom.h"
 #include "usb_serial.h"
 
@@ -106,7 +107,7 @@ struct ConfCommand {
   const int valMax=0;
 };
 
-constexpr std::array<ConfCommand, 14> map2 = {{
+constexpr std::array<ConfCommand, 15> map2 = {{
     {
       .name = "magnet",
       .get_f = [] {return userParam.getMotorNbMagnets();},
@@ -193,6 +194,19 @@ constexpr std::array<ConfCommand, 14> map2 = {{
 		  eepromErase() != PROG_OK ? "ERROR" : "SUCCESS");	  
       }
     },
+#if UPDATE_TOTAL_ERRORS
+    {
+      .name = "errors", 
+      .set_f =  [] ([[maybe_unused]] uint32_t v) {
+	chprintf (chp, "total measure errors : ");
+	for (size_t i=0; i<userParam.getNbMotors(); i++) {
+	  chprintf (chp, "m[%u] : %lu, ",
+		    i+1,  rpmGetTotalErrors(i));
+	}
+	chprintf (chp, "\r\n");
+      }
+    },
+#endif
     {
       .name = "usage", 
       .set_f =  [] ([[maybe_unused]] uint32_t v) {
@@ -213,6 +227,9 @@ constexpr std::array<ConfCommand, 14> map2 = {{
 	       "       : number of averaged samples will be window-(2*median)\r\n"
 	       "       : window=1, median=0 will switch off low pass filter\r\n"
 	       "\r\n"
+#if UPDATE_TOTAL_ERRORS	 
+	       "errors : number of detected measure errors from sensors\r\n"
+#endif
 	       "\r\n"
 	       "show   : show all current parameters\r\n"
 	       "store  : store current parameters in eeprom\r\n"

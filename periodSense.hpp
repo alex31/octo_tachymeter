@@ -34,10 +34,16 @@ public:
   static uint8_t getWinAvgSize(void);
   static void	 setWinAvgMedianSize(const uint8_t size);
   static uint8_t getWinAvgMedianSize(void);
+#if UPDATE_TOTAL_ERRORS
+  static void    resetBadMeasure(void);
+#endif
   icucnt_t	 getPeriodAverage(void) const;
   uint32_t	 getRPM(void) const ;
   uint32_t	 getMperiod(void) const {return winAvg[icup->index].getMean();};
   uint32_t	 getNumBadMeasure(void) const {return winErr[icup->index].getSum();};
+#if UPDATE_TOTAL_ERRORS
+  uint32_t	 getTotalBadMeasure(void) const {return totalErrorCount[icup->index];};
+#endif
   uint32_t	 getRperiod(void) const {return icuGetPeriodX(icup);};
   uint32_t	 getRWidth(void) const {return icuGetWidthX(icup);};
   uint32_t	 getTimPsc(void) const {return icup->tim->PSC;};
@@ -60,6 +66,9 @@ private:
   static ErrorWin	winErr[ICU_NUMBER_OF_ENTRIES];
 #if OPTOCOUPLER_ON_BOARD
   static uint32_t	optoTimeStamp[ICU_NUMBER_OF_ENTRIES];
+#endif
+#if UPDATE_TOTAL_ERRORS
+  static uint32_t	totalErrorCount[ICU_NUMBER_OF_ENTRIES];
 #endif
   static size_t		indexer;
   

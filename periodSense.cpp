@@ -28,6 +28,14 @@ void PeriodSense::setIcuForHallSensor(ICUDriver * const _icup, const icuchannel_
 	winErr[licup->index].push(0);
       } else {
 	winErr[licup->index].push(1);
+#if UPDATE_TOTAL_ERRORS
+	// increment errors only when motor is running
+	if ((calcParam.getWidthOneRpmOpto() /
+	     (winAvg[licup->index].getMeanFromIsr()))
+	    > (userParam.getMinRpm() * 2)) {
+	  totalErrorCount[licup->index]++;
+	}
+#endif
       }
       licup->hasOverflow = false;
 #ifdef TRACE
@@ -203,12 +211,19 @@ uint8_t PeriodSense::getWinAvgMedianSize(void)
 {
   return winAvg[0].getMedianFilterSize();
 }
-
-
+#if UPDATE_TOTAL_ERRORS
+void    PeriodSense::resetBadMeasure(void)
+{
+  for (auto &m : totalErrorCount) {m=0;}
+}
+#endif
 CountWinAvg	PeriodSense::winAvg[ICU_NUMBER_OF_ENTRIES]{INIT_MEDIAN_FILTER_SIZE};
 ErrorWin	PeriodSense::winErr[ICU_NUMBER_OF_ENTRIES];
 #if OPTOCOUPLER_ON_BOARD 
 uint32_t	PeriodSense::optoTimeStamp[ICU_NUMBER_OF_ENTRIES] = {0};
+#endif
+#if UPDATE_TOTAL_ERRORS
+uint32_t	PeriodSense::totalErrorCount[ICU_NUMBER_OF_ENTRIES] = {0};
 #endif
 size_t		PeriodSense::indexer = 0UL;
 
