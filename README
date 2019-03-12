@@ -4,12 +4,12 @@ GOALS
 
     The need is to get precise rotation velocity measurement on a UAV
  equipped with as much as 8 brushless engines, with a refresh rate of
- 1khz, using hall effect sensor and/or one ESC output background
- information
+ 1 kHz, using hall effect sensor and/or one ESC output background
+ information.
 
 
 
-portage to definitive hardware should be easy thanks to ChibiOS
+Portage to different hardware should be easy thanks to ChibiOS
 Hardware Abstraction Layer.
 
 
@@ -30,34 +30,32 @@ sensor
 
 ° send confidence of measure message
 on UART if hall sensors don’t give signal with good shape confidence
-message are sent only if bad measure is detected on at least one
-sensor
+error message are sent only if bad measure is detected on at least one
+sensor.
+Total number of erroneous data senses can be recorded and printed via shell if
+makefile variable UPDATE_TOTAL_ERRORS is set to 1
 
-° msg rate is 930hz for 8 motors, 1800hz for two motors,
-@230kbaud message are sent in continuous mode, not @ fixed rate
+° message are sent at a configurable fixed rate
 
-° uart speed can be increased to raise message rate
+° uart baud rate can be increased to raise message (via shell)
 
-° get configuration (number of motor, ESC or HALL mode) from jumper (or
-solder bridge)
+° set/get configuration to/from eeprom via serial messages or shell commands
 
-° filtering on data : window average + median filter
+° filtering on data : window average + median filter. theses filter parameters
+  can be configured via serial messages or shell commands
 
 
 * hardware
 
-° breadboard to test hall effect sensor : the one we have in
-test has a position tolerance of 2 millimeters from outer rotor
+° hall effect sensor position tolerence
+  + 2 millimetres for RSII-2306
+  + 0.5  millimetres for MK3638 which has better magnetic shield (good for
+         motor efficiency, bad for hall effect sensing)
 
 
-° breadboard to test opto coupler for ESC phase using only passive
-components the one we have tested (Logic Analyser only) has a very
-limited bandwidth and shadows pwm pulses.
+° opto coupler solution has been tested (can be enabled with makefile variable OPTOCOUPLER_ON_BOARD)
+  but not implemented in hardware for octotacho v0 hardware.
 
-
-° engine : EMAX RSII 2306 engine magnet are easier to
-detect than previously tested motor, and we can achieve tests without
-any bad measure on the bench.
 
 
 TODO LIST
@@ -65,34 +63,12 @@ TODO LIST
 * software
 
 ° implement ESC signal processing to guess speed
-from ESC output
+from ESC output in any condition
 
-° get/set configuration via messages : UART link can be
-used in full duplex to permit flight controler to configure tachymeter
-(number of engine, ESC ou HALL mode, data rate, etc)
-
-° use dshot controller @high frequency (4khz) to change at fast pace engine rpm
-and see if we can observe engine response.
-
-* hardware
-
-° test other brand/model of hall effect sensors so see if some
-models are more position tolerant than the first we have tested.
-
-° test other brand/model of optocoupler to find one with higher bandwidth
-
-° design stm32f722 64 pins based specific card with electronic to
-connect hall effect sensor (need pullup resistor), or direct ESC
-connection (need optocoupler + passive or active components).
-
-stm32f7 is priced identically but is twice as powerfull. drawback is it has
-less flash memory (512ko) than stm32f4 (1024ko), but firmware will
-stay way below 512ko
-
-
-° test in real condition with vibrations to see hall sensor behavior in
+° test in real condition with vibrations to see hall sensor behaviour in
 real life
 
 
-° what are the minimum and maximum number of
-battery cell we went to support (from 2S to 6S ?) ?
+* documentation
+
+° user manual
